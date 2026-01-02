@@ -24,17 +24,15 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  // Jangan cache permintaan video Cloud Storage atau Firestore
   const isDynamic =
     url.hostname.includes('googleapis.com') ||
     url.hostname.includes('firebaseapp.com') ||
-    url.pathname.includes('/o/') || // Storage URLs
-    url.pathname.includes('/v1/') || // Firestore REST
+    url.hostname.includes('firebasestorage.app') ||
+    url.pathname.includes('/o/') ||
+    url.pathname.includes('/v1/') ||
     event.request.headers.get('accept')?.includes('text/event-stream');
 
-  if (event.request.method !== 'GET' || isDynamic) {
-    return; // network-only untuk API/video
-  }
+  if (event.request.method !== 'GET' || isDynamic) return;
 
   event.respondWith(
     caches.match(event.request).then((cached) => {
