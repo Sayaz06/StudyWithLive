@@ -7,18 +7,15 @@
 
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#020617" />
-
-  <link rel="stylesheet" href="/styles.css" />
-
-  <!-- PWA installability -->
   <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
   <!-- Page 1: Login -->
   <div id="page-login" class="page">
     <div class="container">
       <h1 class="app-title">StressTogether</h1>
-      <p class="subtext">Simpan rakaman TikTok Live — pendek hingga panjang, dengan carian pantas dan main semula.</p>
+      <p class="subtext">Simpan Live TikTok — pendek hingga panjang. Login untuk mula.</p>
       <button id="btn-google" class="btn-primary">Login dengan Google</button>
     </div>
   </div>
@@ -43,6 +40,7 @@
         </div>
       </div>
 
+      <!-- Preview selepas pilih fail -->
       <section id="upload-preview" class="upload-preview hidden">
         <h3 class="section-title">Fail baru</h3>
         <div class="preview-card">
@@ -54,13 +52,16 @@
               <button id="btn-save-upload" class="btn-primary">Simpan ke Cloud</button>
               <button id="btn-cancel-upload" class="btn-ghost">Batal</button>
             </div>
+            <div id="upload-progress" class="progress hidden">
+              <div id="upload-bar" class="progress-bar"></div>
+              <span id="upload-label" class="progress-label">0%</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="gallery" class="gallery">
-        <!-- Cards akan di-render oleh JS -->
-      </section>
+      <!-- Galeri video -->
+      <section id="gallery" class="gallery"></section>
     </main>
   </div>
 
@@ -75,7 +76,7 @@
       <div class="player-controls">
         <div class="control-group">
           <label class="label">Kelajuan</label>
-          <select id="playback-rate" class="input">
+          <select id="playback-rate" class="input small">
             <option value="0.75">0.75×</option>
             <option value="1" selected>1×</option>
             <option value="1.25">1.25×</option>
