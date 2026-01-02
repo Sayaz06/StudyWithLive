@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StressTogether</title>
+
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#020617" />
+
+  <link rel="stylesheet" href="/styles.css" />
+
+  <!-- PWA installability -->
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+</head>
+<body>
+  <!-- Page 1: Login -->
+  <div id="page-login" class="page">
+    <div class="container">
+      <h1 class="app-title">StressTogether</h1>
+      <p class="subtext">Simpan rakaman TikTok Live — pendek hingga panjang, dengan carian pantas dan main semula.</p>
+      <button id="btn-google" class="btn-primary">Login dengan Google</button>
+    </div>
+  </div>
+
+  <!-- Page 2: Home -->
+  <div id="page-home" class="page hidden">
+    <header class="home-header">
+      <div class="header-left">
+        <h2 class="brand">StressTogether</h2>
+      </div>
+      <div class="header-right">
+        <button id="btn-logout" class="btn-ghost">Logout</button>
+      </div>
+    </header>
+
+    <main class="home-main">
+      <div class="toolbar">
+        <input id="search" type="search" class="input" placeholder="Cari video..." />
+        <div class="upload-group">
+          <button id="btn-upload" class="btn-primary">Tambah Fail</button>
+          <input id="file-input" type="file" accept="video/*" class="hidden" />
+        </div>
+      </div>
+
+      <section id="upload-preview" class="upload-preview hidden">
+        <h3 class="section-title">Fail baru</h3>
+        <div class="preview-card">
+          <video id="preview-video" controls class="video"></video>
+          <div class="preview-meta">
+            <label class="label">Nama video</label>
+            <input id="preview-title" class="input" placeholder="Contoh: Live Q&A 2026-01-02" />
+            <div class="preview-actions">
+              <button id="btn-save-upload" class="btn-primary">Simpan ke Cloud</button>
+              <button id="btn-cancel-upload" class="btn-ghost">Batal</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery" class="gallery">
+        <!-- Cards akan di-render oleh JS -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Player modal -->
+  <div id="player-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="player-title" class="section-title"></h3>
+        <button id="btn-close-player" class="btn-ghost">Tutup</button>
+      </div>
+      <video id="player" class="video" controls></video>
+      <div class="player-controls">
+        <div class="control-group">
+          <label class="label">Kelajuan</label>
+          <select id="playback-rate" class="input">
+            <option value="0.75">0.75×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <button id="btn-skip-back" class="btn-ghost">« Undur 10s</button>
+          <button id="btn-skip-forward" class="btn-ghost">Lompat 10s »</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/firebase.js"></script>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
