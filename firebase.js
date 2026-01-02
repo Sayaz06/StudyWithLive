@@ -1,5 +1,5 @@
 // Firebase setup untuk projek StudyWithLive
-// Pastikan Authentication (Google), Firestore, dan Storage di-enable dalam Firebase Console
+// Authentication (Google), Firestore, dan Storage mesti diaktifkan dalam Firebase Console
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
@@ -48,21 +48,21 @@ export const provider = new GoogleAuthProvider();
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-// Pastikan session kekal walaupun refresh
+// Kekalkan sesi walaupun refresh (tiada auto-logout)
 await setPersistence(auth, browserLocalPersistence);
 
 export const signInGoogle = () => signInWithPopup(auth, provider);
 export const signOutGoogle = () => signOut(auth);
 
-// Helper Firestore paths
+// Firestore helpers
 export const userVideosCol = (uid) => collection(db, `users/${uid}/videos`);
 export const userVideoDoc = (uid, id) => doc(db, `users/${uid}/videos/${id}`);
 
-// Storage path: users/{uid}/videos/{id}.mp4
+// Storage path: users/{uid}/videos/{id}.{ext}
 export const storageRefFor = (uid, id, ext = "mp4") =>
   ref(storage, `users/${uid}/videos/${id}.${ext}`);
 
-// Subscribe to list (ordered by createdAt desc)
+// Subscribe (order desc)
 export const subscribeVideos = (uid, callback) => {
   const q = query(userVideosCol(uid), orderBy("createdAt", "desc"));
   return onSnapshot(q, callback);
