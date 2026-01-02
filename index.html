@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StressTogether</title>
 
-  <link rel="manifest" href="/manifest.json" />
+  <!-- Gunakan path relatif -->
+  <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#020617" />
-  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" type="image/png" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <!-- Page 1: Login -->
@@ -92,7 +93,8 @@
     </div>
   </div>
 
-  <script type="module" src="/firebase.js"></script>
-  <script type="module" src="/app.js"></script>
+  <!-- JS modules: path relatif -->
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
