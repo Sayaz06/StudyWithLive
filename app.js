@@ -1,3 +1,10 @@
+// Register SW dengan path relatif
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+/* ... (semua kod app.js sama seperti versi sebelum ini) ... */
+
 import {
   auth,
   signInGoogle,
