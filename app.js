@@ -1,8 +1,7 @@
 import {
   auth,
   signInGoogle,
-  signOutGoogle,
-  onAuthStateChanged
+  signOutGoogle
 } from "./firebase.js";
 
 import {
@@ -45,6 +44,9 @@ const previewVideo = document.getElementById('preview-video');
 const previewTitle = document.getElementById('preview-title');
 const btnSaveUpload = document.getElementById('btn-save-upload');
 const btnCancelUpload = document.getElementById('btn-cancel-upload');
+const uploadProgress = document.getElementById('upload-progress');
+const uploadBar = document.getElementById('upload-bar');
+const uploadLabel = document.getElementById('upload-label');
 
 const gallery = document.getElementById('gallery');
 
@@ -58,12 +60,12 @@ const btnSkipForward = document.getElementById('btn-skip-forward');
 
 // State
 let currentUser = null;
-let videos = [];      // list from Firestore
-let filtered = [];    // for search
-let tempFile = null;  // selected file for upload
-let tempExt = 'mp4';  // default extension
+let videos = [];
+let filtered = [];
+let tempFile = null;
+let tempExt = 'mp4';
 
-// Auth flow
+// Auth UI
 btnGoogle.addEventListener('click', async () => {
   try {
     await signInGoogle();
@@ -92,7 +94,8 @@ function showHome() {
   pageHome.classList.remove('hidden');
 }
 
-// Auth state persistence (not auto-logout on refresh)
+// Auth state
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 onAuthStateChanged(auth, (user) => {
   if (user) {
     currentUser = user;
@@ -121,6 +124,7 @@ fileInput.addEventListener('change', () => {
 
   previewTitle.value = file.name.replace(/\.[^/.]+$/, '');
   previewSection.classList.remove('hidden');
+  hideProgress();
 });
 
 btnCancelUpload.addEventListener('click', () => {
@@ -129,6 +133,7 @@ btnCancelUpload.addEventListener('click', () => {
 
 btnSaveUpload.addEventListener('click', async () => {
   if (!currentUser || !tempFile) return;
+
   const id = crypto.randomUUID();
   const uid = currentUser.uid;
   const title = (previewTitle.value || 'Rakaman baru').trim();
@@ -139,10 +144,15 @@ btnSaveUpload.addEventListener('click', async () => {
 
     btnSaveUpload.disabled = true;
     btnSaveUpload.textContent = 'Memuat naik...';
+    showProgress();
 
     await new Promise((resolve, reject) => {
       task.on('state_changed',
-        () => {},
+        (snap) => {
+          const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+          uploadBar.style.width = pct + '%';
+          uploadLabel.textContent = pct + '%';
+        },
         reject,
         resolve
       );
@@ -166,8 +176,18 @@ btnSaveUpload.addEventListener('click', async () => {
     console.error(err);
     btnSaveUpload.disabled = false;
     btnSaveUpload.textContent = 'Simpan ke Cloud';
+    showProgress(); // keep visible for context
   }
 });
+
+function showProgress() {
+  uploadProgress.classList.remove('hidden');
+  uploadBar.style.width = '0%';
+  uploadLabel.textContent = '0%';
+}
+function hideProgress() {
+  uploadProgress.classList.add('hidden');
+}
 
 // Helpers
 function resetUploadPreview() {
@@ -178,6 +198,7 @@ function resetUploadPreview() {
   btnSaveUpload.textContent = 'Simpan ke Cloud';
   fileInput.value = '';
   tempFile = null;
+  hideProgress();
 }
 
 // Gallery subscription
@@ -209,9 +230,7 @@ function renderList() {
   if (!filtered.length) {
     const empty = document.createElement('div');
     empty.className = 'card';
-    empty.innerHTML = `
-      <p class="card-sub">Tiada video ditemui. Tambah fail untuk mula menyimpan rakaman.</p>
-    `;
+    empty.innerHTML = `<p class="card-sub">Tiada video ditemui. Tambah fail untuk mula menyimpan rakaman.</p>`;
     gallery.appendChild(empty);
     return;
   }
@@ -220,9 +239,10 @@ function renderList() {
     const card = document.createElement('div');
     card.className = 'card';
     const created = new Date(item.createdAt).toLocaleString();
+    const sizeMb = (item.sizeBytes/1024/1024).toFixed(2);
     card.innerHTML = `
       <h4 class="card-title">${escapeHtml(item.title || 'Rakaman')}</h4>
-      <p class="card-sub">${created} • ${(item.sizeBytes/1024/1024).toFixed(2)} MB</p>
+      <p class="card-sub">${created} • ${sizeMb} MB</p>
       <div class="card-actions">
         <button class="btn-primary" data-id="${item.id}" data-action="play">Mainkan</button>
         <button class="btn-ghost" data-id="${item.id}" data-action="rename">Tukar nama</button>
@@ -247,9 +267,7 @@ gallery.addEventListener('click', async (e) => {
 
   if (action === 'play') {
     openPlayer(item);
-  }
-
-  if (action === 'rename') {
+  } else if (action === 'rename') {
     const newTitle = prompt('Nama baru video:', item.title || '');
     if (!newTitle || !currentUser) return;
     try {
@@ -258,9 +276,7 @@ gallery.addEventListener('click', async (e) => {
       alert('Gagal menukar nama.');
       console.error(err);
     }
-  }
-
-  if (action === 'delete') {
+  } else if (action === 'delete') {
     if (!confirm('Padam video ini?')) return;
     if (!currentUser) return;
     try {
