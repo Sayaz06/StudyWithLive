@@ -1,4 +1,4 @@
-const STATIC_CACHE = 'studywithlive-static-v6';
+const STATIC_CACHE = 'studywithlive-static-v7';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
