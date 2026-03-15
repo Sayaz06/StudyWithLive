@@ -46,6 +46,7 @@ const btnClosePlayer = document.getElementById('btn-close-player');
 const playbackRate = document.getElementById('playback-rate');
 const btnSkipBack = document.getElementById('btn-skip-back');
 const btnSkipForward = document.getElementById('btn-skip-forward');
+const processNote = document.getElementById('process-note');
 
 // New Elements for Audio
 const checkConvert = document.getElementById('check-convert');
@@ -119,12 +120,17 @@ btnSaveUpload.addEventListener('click', async () => {
     btnSaveUpload.disabled = true;
     showProgress();
 
-    // LOGIK CONVERT: Jika tick, proses audio extraction
+    // LOGIK CONVERT: Gunakan Streaming MediaRecorder
     if (checkConvert.checked && tempFile.type.includes('video')) {
-      uploadLabel.textContent = "Mengekstrak audio...";
-      fileToUpload = await extractAudio(tempFile);
+      uploadLabel.textContent = "Sedia merakam audio...";
+      processNote.classList.remove('hidden');
+      
+      fileToUpload = await extractAudioStreaming(tempFile, previewVideo);
+      
+      processNote.classList.add('hidden');
       finalExt = 'mp3';
       title += " (Audio)";
+      uploadLabel.textContent = "Audio sedia! Memulakan muat naik...";
     }
 
     const storageRef = storageRefFor(uid, id, finalExt);
@@ -149,55 +155,67 @@ btnSaveUpload.addEventListener('click', async () => {
       }
     );
   } catch (err) {
-    alert('Proses gagal.');
+    alert('Proses gagal. Sila cuba lagi.');
     console.error(err);
     btnSaveUpload.disabled = false;
+    processNote.classList.add('hidden');
   }
 });
 
-// Fungsi untuk mengekstrak audio menggunakan Web Audio API
-async function extractAudio(file) {
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const arrayBuffer = await file.arrayBuffer();
-  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-  const offlineCtx = new OfflineAudioContext(audioBuffer.numberOfChannels, audioBuffer.length, audioBuffer.sampleRate);
-  const source = offlineCtx.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(offlineCtx.destination);
-  source.start();
-  const renderedBuffer = await offlineCtx.startRendering();
-  
-  // Convert AudioBuffer to Wav/Mp3 Blob
-  const wavBlob = audioBufferToWav(renderedBuffer);
-  return new File([wavBlob], "audio.mp3", { type: 'audio/mp3' });
-}
+// Fungsi untuk mengekstrak audio menggunakan MediaRecorder (Streaming Real-time)
+function extractAudioStreaming(file, videoElement) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    videoElement.src = url;
+    videoElement.muted = true; // Wajib senyapkan supaya audio tidak bising di luar
 
-// Helper: AudioBuffer to Wav
-function audioBufferToWav(buffer) {
-  let numOfChan = buffer.numberOfChannels,
-      length = buffer.length * numOfChan * 2 + 44,
-      bufferArr = new ArrayBuffer(length),
-      view = new DataView(bufferArr),
-      channels = [], i, sample, offset = 0, pos = 0;
+    videoElement.onloadeddata = async () => {
+      try {
+        await videoElement.play();
+        const stream = videoElement.captureStream ? videoElement.captureStream() : videoElement.mozCaptureStream();
+        const audioTracks = stream.getAudioTracks();
 
-  const setU32 = (d) => { view.setUint32(pos, d, true); pos += 4; };
-  const setU16 = (d) => { view.setUint16(pos, d, true); pos += 2; };
+        if (audioTracks.length === 0) {
+          reject(new Error("Tiada trek audio dikesan dalam video ini."));
+          return;
+        }
 
-  setU32(0x46464952); setU32(length - 8); setU32(0x45564157);
-  setU32(0x20746d66); setU32(16); setU16(1); setU16(numOfChan);
-  setU32(buffer.sampleRate); setU32(buffer.sampleRate * 2 * numOfChan);
-  setU16(numOfChan * 2); setU16(16); setU32(0x61746164); setU32(length - pos - 4);
+        const audioStream = new MediaStream(audioTracks);
+        const mediaRecorder = new MediaRecorder(audioStream);
+        let audioChunks = [];
 
-  for (i = 0; i < numOfChan; i++) channels.push(buffer.getChannelData(i));
-  while (pos < length) {
-    for (i = 0; i < numOfChan; i++) {
-      sample = Math.max(-1, Math.min(1, channels[i][offset]));
-      sample = sample < 0 ? sample * 0x8000 : sample * 0x7FFF;
-      view.setInt16(pos, sample, true); pos += 2;
-    }
-    offset++;
-  }
-  return new Blob([bufferArr], { type: 'audio/wav' });
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) audioChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+          resolve(new File([audioBlob], "audio.mp3", { type: 'audio/mp3' }));
+        };
+
+        mediaRecorder.start();
+
+        // Update progress teks berdasarkan masa video
+        const intervalId = setInterval(() => {
+          if (!videoElement.paused) {
+            const pct = Math.round((videoElement.currentTime / videoElement.duration) * 100);
+            uploadLabel.textContent = `Merakam: ${pct}% (Sila tunggu)`;
+            uploadBar.style.width = pct + '%';
+          }
+        }, 1000);
+
+        videoElement.onended = () => {
+          clearInterval(intervalId);
+          mediaRecorder.stop();
+        };
+
+      } catch (err) {
+        reject(err);
+      }
+    };
+
+    videoElement.onerror = () => reject(new Error("Gagal memuatkan video untuk rakaman."));
+  });
 }
 
 // Gallery & Player (Kekal asal)
@@ -265,7 +283,7 @@ searchInput.oninput = () => renderList();
 btnCancelUpload.onclick = resetUploadPreview;
 
 function showProgress() { uploadProgress.classList.remove('hidden'); }
-function hideProgress() { uploadProgress.classList.add('hidden'); }
+function hideProgress() { uploadProgress.classList.add('hidden'); uploadBar.style.width = '0%'; }
 function resetUploadPreview() {
   previewSection.classList.add('hidden');
   previewVideo.src = '';
@@ -273,5 +291,6 @@ function resetUploadPreview() {
   checkConvert.checked = false;
   btnSaveUpload.disabled = false;
   hideProgress();
+  processNote.classList.add('hidden');
 }
 function escapeHtml(s) { return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
