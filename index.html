@@ -3,52 +3,66 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StressTogether</title>
-
-  <!-- Gunakan path relatif -->
+  <title>StressTogether - Video & Audio</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#020617" />
   <link rel="icon" type="image/png" href="./icons/icon-192.png" />
   <link rel="stylesheet" href="./styles.css" />
+  <style>
+    /* Tambahan CSS ringkas untuk fungsi baru */
+    .convert-option {
+      margin: 15px 0;
+      padding: 10px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+    }
+    .convert-option input { width: 18px; height: 18px; cursor: pointer; }
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-  <!-- Page 1: Login -->
   <div id="page-login" class="page">
     <div class="container">
       <h1 class="app-title">StressTogether</h1>
-      <p class="subtext">Simpan Live TikTok — pendek hingga panjang. Login untuk mula.</p>
+      <p class="subtext">Simpan Video & MP3 — pendek hingga panjang. Login untuk mula.</p>
       <button id="btn-google" class="btn-primary">Login dengan Google</button>
     </div>
   </div>
 
-  <!-- Page 2: Home -->
   <div id="page-home" class="page hidden">
     <header class="home-header">
-      <div class="header-left">
-        <h2 class="brand">StressTogether</h2>
-      </div>
-      <div class="header-right">
-        <button id="btn-logout" class="btn-ghost">Logout</button>
-      </div>
+      <div class="header-left"><h2 class="brand">StressTogether</h2></div>
+      <div class="header-right"><button id="btn-logout" class="btn-ghost">Logout</button></div>
     </header>
 
     <main class="home-main">
       <div class="toolbar">
-        <input id="search" type="search" class="input" placeholder="Cari video..." />
+        <input id="search" type="search" class="input" placeholder="Cari rakaman..." />
         <div class="upload-group">
           <button id="btn-upload" class="btn-primary">Tambah Fail</button>
-          <input id="file-input" type="file" accept="video/*" class="hidden" />
+          <input id="file-input" type="file" accept="video/*,audio/*" class="hidden" />
         </div>
       </div>
 
-      <!-- Preview selepas pilih fail -->
       <section id="upload-preview" class="upload-preview hidden">
-        <h3 class="section-title">Fail baru</h3>
+        <h3 class="section-title">Preview Fail</h3>
         <div class="preview-card">
-          <video id="preview-video" controls class="video"></video>
+          <video id="preview-video" controls class="video" style="max-height: 200px; background: #000;"></video>
           <div class="preview-meta">
-            <label class="label">Nama video</label>
-            <input id="preview-title" class="input" placeholder="Contoh: Live Q&A 2026-01-02" />
+            <label class="label">Tajuk Simpanan</label>
+            <input id="preview-title" class="input" placeholder="Masukkan tajuk..." />
+            
+            <label class="convert-option" id="convert-container">
+              <input type="checkbox" id="check-convert"> 
+              <span>Tukar Video ke MP3 (Audio Sahaja)</span>
+            </label>
+
             <div class="preview-actions">
               <button id="btn-save-upload" class="btn-primary">Simpan ke Cloud</button>
               <button id="btn-cancel-upload" class="btn-ghost">Batal</button>
@@ -61,12 +75,10 @@
         </div>
       </section>
 
-      <!-- Galeri video -->
       <section id="gallery" class="gallery"></section>
     </main>
   </div>
 
-  <!-- Player modal -->
   <div id="player-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
@@ -80,20 +92,18 @@
           <select id="playback-rate" class="input small">
             <option value="0.75">0.75×</option>
             <option value="1" selected>1×</option>
-            <option value="1.25">1.25×</option>
             <option value="1.5">1.5×</option>
             <option value="2">2×</option>
           </select>
         </div>
         <div class="control-group">
-          <button id="btn-skip-back" class="btn-ghost">« Undur 10s</button>
-          <button id="btn-skip-forward" class="btn-ghost">Lompat 10s »</button>
+          <button id="btn-skip-back" class="btn-ghost">« 10s</button>
+          <button id="btn-skip-forward" class="btn-ghost">10s »</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- JS modules: path relatif -->
   <script type="module" src="./firebase.js"></script>
   <script type="module" src="./app.js"></script>
 </body>
