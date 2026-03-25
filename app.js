@@ -10,7 +10,7 @@ import {
 
 import {
   setDoc,
-  updateDoc,
+  updateDoc, // Fungsi ini sedia ada, kita akan gunakannya
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -242,11 +242,14 @@ function renderList() {
   filtered.forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
+    
+    // --- TAMBAH BUTANG EDIT DI SINI ---
     card.innerHTML = `
       <h4 class="card-title">${escapeHtml(item.title || 'Rakaman')}</h4>
       <p class="card-sub">${item.ext.toUpperCase()} • ${(item.sizeBytes/1024/1024).toFixed(2)} MB</p>
       <div class="card-actions">
         <button class="btn-primary" data-id="${item.id}" data-action="play">Main</button>
+        <button class="btn-ghost" data-id="${item.id}" data-action="rename">Edit</button>
         <button class="btn-ghost" data-id="${item.id}" data-action="delete">Padam</button>
       </div>`;
     gallery.appendChild(card);
@@ -259,7 +262,25 @@ gallery.addEventListener('click', async (e) => {
   const id = btn.dataset.id;
   const action = btn.dataset.action;
   const item = videos.find(v => v.id === id);
+  
   if (action === 'play') openPlayer(item);
+  
+  // --- FUNGSI TAMBAHAN: RENAME (TUKAR NAMA) ---
+  if (action === 'rename') {
+    const newTitle = prompt('Masukkan nama baharu untuk fail ini:', item.title);
+    if (newTitle && newTitle.trim() !== '' && newTitle.trim() !== item.title) {
+      try {
+        await updateDoc(userVideoDoc(currentUser.uid, id), {
+          title: newTitle.trim()
+        });
+      } catch (err) {
+        alert('Gagal menukar nama fail.');
+        console.error(err);
+      }
+    }
+  }
+
+  // Kekal logik asal
   if (action === 'delete') {
     if (confirm('Padam fail?')) {
       await deleteObject(storageRefFor(currentUser.uid, id, item.ext));
