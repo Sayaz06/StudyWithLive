@@ -121,6 +121,35 @@
     #player { background: #000; min-height: 120px; }
     #player:not([src]), #player[src=""] { min-height: 40px; }
 
+    /* ── PIN ── */
+    .pin-dots {
+      display: flex; justify-content: center; gap: 12px; margin: 16px auto;
+    }
+    .pin-dots span {
+      width: 16px; height: 16px; border-radius: 50%;
+      border: 2px solid var(--border-2); background: transparent;
+      transition: background 0.15s;
+    }
+    .pin-dots span.filled { background: var(--indigo); border-color: var(--indigo); }
+    .pin-dots span.error  { background: #ef4444; border-color: #ef4444; }
+    .pin-keypad {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; max-width: 260px; margin: 16px auto 0;
+    }
+    .pin-key {
+      appearance: none; border: 1px solid var(--border-2);
+      background: #0b1220; color: var(--text);
+      border-radius: 12px; font-size: 20px; padding: 16px;
+      cursor: pointer; transition: background 0.1s;
+    }
+    .pin-key:active { background: var(--border); }
+    .pin-key-clear { color: #ef4444; border-color: #ef4444; }
+    .pin-key-del   { color: var(--subtext); }
+    .pin-error {
+      color: #ef4444; font-size: 13px; margin: 8px 0;
+      min-height: 20px;
+    }
+
     /* ── Creator Page ── */
     #page-creator .container { max-width: 480px; }
     .creator-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
@@ -172,8 +201,61 @@
   <div id="page-login" class="page">
     <div class="container" style="text-align:center">
       <h1 class="app-title">StressTogether</h1>
-      <p class="subtext">Simpan Video & MP3 — pendek hingga panjang.<br>Login untuk mula.</p>
-      <button id="btn-google" class="btn-primary">Login dengan Google</button>
+      <p class="subtext">Simpan Video & MP3 — pendek hingga panjang.</p>
+      <div id="login-pin-section" class="hidden">
+        <p style="color:var(--subtext);margin-bottom:16px">Masukkan PIN 6 digit</p>
+        <div class="pin-dots" id="pin-dots">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+        </div>
+        <div class="pin-error hidden" id="pin-error">PIN salah. Cuba lagi.</div>
+        <div class="pin-keypad" id="pin-keypad">
+          <button class="pin-key" data-val="1">1</button>
+          <button class="pin-key" data-val="2">2</button>
+          <button class="pin-key" data-val="3">3</button>
+          <button class="pin-key" data-val="4">4</button>
+          <button class="pin-key" data-val="5">5</button>
+          <button class="pin-key" data-val="6">6</button>
+          <button class="pin-key" data-val="7">7</button>
+          <button class="pin-key" data-val="8">8</button>
+          <button class="pin-key" data-val="9">9</button>
+          <button class="pin-key pin-key-clear" data-val="clear">✕</button>
+          <button class="pin-key" data-val="0">0</button>
+          <button class="pin-key pin-key-del" data-val="del">⌫</button>
+        </div>
+        <button id="btn-use-google-instead" class="btn-ghost" style="margin-top:16px;font-size:13px">Guna Google Login</button>
+      </div>
+      <div id="login-google-section">
+        <button id="btn-google" class="btn-primary">Login dengan Google</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════ SETUP PIN PAGE ══════════════════ -->
+  <div id="page-setup-pin" class="page hidden">
+    <div class="container" style="text-align:center">
+      <h1 class="app-title">Tetapkan PIN</h1>
+      <p class="subtext" id="setup-pin-desc">Cipta PIN 6 digit untuk login pantas.</p>
+      <div class="pin-dots" id="setup-pin-dots">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      <div class="pin-error hidden" id="setup-pin-error"></div>
+      <div class="pin-keypad">
+        <button class="pin-key" data-setup="1">1</button>
+        <button class="pin-key" data-setup="2">2</button>
+        <button class="pin-key" data-setup="3">3</button>
+        <button class="pin-key" data-setup="4">4</button>
+        <button class="pin-key" data-setup="5">5</button>
+        <button class="pin-key" data-setup="6">6</button>
+        <button class="pin-key" data-setup="7">7</button>
+        <button class="pin-key" data-setup="8">8</button>
+        <button class="pin-key" data-setup="9">9</button>
+        <button class="pin-key pin-key-clear" data-setup="clear">✕</button>
+        <button class="pin-key" data-setup="0">0</button>
+        <button class="pin-key pin-key-del" data-setup="del">⌫</button>
+      </div>
+      <button id="btn-skip-pin" class="btn-ghost" style="margin-top:16px;font-size:13px">Langkau — Guna Google Sahaja</button>
     </div>
   </div>
 
@@ -394,14 +476,146 @@
     btnLogout.addEventListener('click', doLogout);
     btnLogoutCreator.addEventListener('click', doLogout);
 
+    // ── PIN state ──
+    let pinBuffer      = '';
+    let setupPinStep   = 'create'; // 'create' | 'confirm'
+    let setupPinFirst  = '';
+    const PIN_KEY      = 'st_pin_hash';
+
+    // ── Extra elements ──
+    const pageSetupPin       = document.getElementById('page-setup-pin');
+    const loginPinSection    = document.getElementById('login-pin-section');
+    const loginGoogleSection = document.getElementById('login-google-section');
+    const pinDots            = document.getElementById('pin-dots');
+    const pinError           = document.getElementById('pin-error');
+    const setupPinDots       = document.getElementById('setup-pin-dots');
+    const setupPinDesc       = document.getElementById('setup-pin-desc');
+    const setupPinError      = document.getElementById('setup-pin-error');
+    const btnUseGoogleInstead= document.getElementById('btn-use-google-instead');
+    const btnSkipPin         = document.getElementById('btn-skip-pin');
+
+    async function hashPin(pin) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
+
+    async function getSavedPinHash() {
+      if (!currentUser) return null;
+      try {
+        const d = await getDoc(doc(db, 'users', currentUser.uid, 'settings', 'pin'));
+        return d.exists() ? d.data().hash : null;
+      } catch { return null; }
+    }
+
+    async function savePinHash(hash) {
+      await setDoc(doc(db, 'users', currentUser.uid, 'settings', 'pin'), { hash });
+    }
+
+    // ── PIN keypad — login screen ──
+    document.getElementById('pin-keypad').addEventListener('click', async (e) => {
+      const val = e.target.closest('.pin-key')?.dataset.val;
+      if (!val) return;
+      if (val === 'clear') { pinBuffer = ''; }
+      else if (val === 'del') { pinBuffer = pinBuffer.slice(0, -1); }
+      else if (pinBuffer.length < 6) { pinBuffer += val; }
+      updatePinDots(pinDots, pinBuffer);
+      pinError.classList.add('hidden');
+
+      if (pinBuffer.length === 6) {
+        const entered = await hashPin(pinBuffer);
+        const saved   = await getSavedPinHash();
+        pinBuffer = '';
+        updatePinDots(pinDots, '');
+        if (entered === saved) {
+          showPage('creator');
+          await loadCreators();
+        } else {
+          pinError.classList.remove('hidden');
+          pinDots.querySelectorAll('span').forEach(s => {
+            s.classList.add('error');
+            setTimeout(() => s.classList.remove('error', 'filled'), 600);
+          });
+        }
+      }
+    });
+
+    btnUseGoogleInstead.addEventListener('click', () => {
+      loginPinSection.classList.add('hidden');
+      loginGoogleSection.classList.remove('hidden');
+    });
+
+    // ── PIN keypad — setup screen ──
+    document.querySelector('.pin-keypad:last-of-type') // setup keypad
+    pageSetupPin.addEventListener('click', async (e) => {
+      const val = e.target.closest('[data-setup]')?.dataset.setup;
+      if (!val) return;
+      if (val === 'clear') { setupPinFirst = ''; pinBuffer = ''; setupPinStep = 'create'; setupPinDesc.textContent = 'Cipta PIN 6 digit untuk login pantas.'; }
+      else if (val === 'del') { pinBuffer = pinBuffer.slice(0, -1); }
+      else if (pinBuffer.length < 6) { pinBuffer += val; }
+      updatePinDots(setupPinDots, pinBuffer);
+      setupPinError.classList.add('hidden');
+
+      if (pinBuffer.length === 6) {
+        if (setupPinStep === 'create') {
+          setupPinFirst = pinBuffer;
+          pinBuffer = '';
+          setupPinStep = 'confirm';
+          setupPinDesc.textContent = 'Masukkan PIN sekali lagi untuk sahkan.';
+          updatePinDots(setupPinDots, '');
+        } else {
+          if (pinBuffer === setupPinFirst) {
+            const hash = await hashPin(pinBuffer);
+            await savePinHash(hash);
+            pinBuffer = ''; setupPinFirst = ''; setupPinStep = 'create';
+            showPage('creator');
+            await loadCreators();
+          } else {
+            setupPinError.textContent = 'PIN tidak sepadan. Cuba lagi.';
+            setupPinError.classList.remove('hidden');
+            pinBuffer = ''; setupPinStep = 'create'; setupPinFirst = '';
+            setupPinDesc.textContent = 'Cipta PIN 6 digit untuk login pantas.';
+            updatePinDots(setupPinDots, '');
+          }
+        }
+      }
+    });
+
+    btnSkipPin.addEventListener('click', () => {
+      showPage('creator');
+      loadCreators();
+    });
+
+    function updatePinDots(dotsEl, buf) {
+      dotsEl.querySelectorAll('span').forEach((s, i) => {
+        s.classList.toggle('filled', i < buf.length);
+      });
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
-        showPage('creator');
-        await loadCreators();
+        const savedHash = await getSavedPinHash();
+        if (savedHash) {
+          // Ada PIN — tunjuk skrin PIN terus
+          pinBuffer = '';
+          updatePinDots(pinDots, '');
+          loginPinSection.classList.remove('hidden');
+          loginGoogleSection.classList.add('hidden');
+          showPage('login');
+        } else {
+          // Tiada PIN — tunjuk setup PIN
+          pinBuffer = ''; setupPinStep = 'create'; setupPinFirst = '';
+          setupPinDesc.textContent = 'Cipta PIN 6 digit untuk login pantas.';
+          updatePinDots(setupPinDots, '');
+          showPage('setup-pin');
+        }
       } else {
         currentUser = null;
         activeCreator = null;
+        pinBuffer = '';
+        // Semak sama ada ada PIN untuk tunjuk keypad atau Google button
+        loginPinSection.classList.add('hidden');
+        loginGoogleSection.classList.remove('hidden');
         showPage('login');
         teardownList();
       }
@@ -409,11 +623,13 @@
 
     function showPage(name) {
       pageLogin.classList.add('hidden');
+      pageSetupPin.classList.add('hidden');
       pageCreator.classList.add('hidden');
       pageHome.classList.add('hidden');
-      if (name === 'login')   pageLogin.classList.remove('hidden');
-      if (name === 'creator') pageCreator.classList.remove('hidden');
-      if (name === 'home')    pageHome.classList.remove('hidden');
+      if (name === 'login')     pageLogin.classList.remove('hidden');
+      if (name === 'setup-pin') pageSetupPin.classList.remove('hidden');
+      if (name === 'creator')   pageCreator.classList.remove('hidden');
+      if (name === 'home')      pageHome.classList.remove('hidden');
     }
 
     // ══════════════════════════════════════
@@ -424,6 +640,8 @@
       const snap = await getDocs(collection(db, 'users', currentUser.uid, 'creators'));
       creators = [];
       snap.forEach(d => creators.push({ id: d.id, ...d.data() }));
+      // Tambah channel khas untuk video lama tanpa creator
+      creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
       renderCreators();
     }
 
@@ -459,6 +677,7 @@
       }
 
       if (editId) {
+        if (editId === '__uncategorized__') return; // tak boleh edit channel khas
         const c = creators.find(x => x.id === editId);
         const newName = prompt('Nama baru channel:', c.name);
         if (newName && newName.trim() && newName.trim() !== c.name) {
@@ -469,6 +688,7 @@
       }
 
       if (delId) {
+        if (delId === '__uncategorized__') return; // tak boleh padam channel khas
         if (!confirm('Padam channel ini? Video dalam channel tidak akan dipadam.')) return;
         await deleteDoc(doc(db, 'users', currentUser.uid, 'creators', delId));
         creators = creators.filter(c => c.id !== delId);
@@ -571,9 +791,12 @@
         videos = [];
         snap.forEach(d => {
           const data = d.data();
-          // Tapis ikut creator
-          if (!data.creatorId || data.creatorId === activeCreator.id) {
-            videos.push(data);
+          if (activeCreator.id === '__uncategorized__') {
+            // Channel khas: tunjuk video yang tiada creatorId sahaja
+            if (!data.creatorId) videos.push(data);
+          } else {
+            // Channel biasa: tunjuk video yang creatorId sepadan
+            if (data.creatorId === activeCreator.id) videos.push(data);
           }
         });
         renderList();
