@@ -547,7 +547,6 @@
     });
 
     // ── PIN keypad — setup screen ──
-    document.querySelector('.pin-keypad:last-of-type') // setup keypad
     pageSetupPin.addEventListener('click', async (e) => {
       const val = e.target.closest('[data-setup]')?.dataset.setup;
       if (!val) return;
