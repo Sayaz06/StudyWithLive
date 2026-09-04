@@ -118,3 +118,12 @@ body {
 .progress-label {
   margin-left: 8px; font-size: 11px; color: var(--subtext);
 }
+
+#player {
+  background: #000;
+  min-height: 120px;
+}
+
+#player:not([src]), #player[src=""] {
+  min-height: 40px;
+}
