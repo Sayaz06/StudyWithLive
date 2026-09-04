@@ -378,29 +378,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 
 <!-- ════════════════ FIREBASE ════════════════ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut,
   onAuthStateChanged, EmailAuthProvider, linkWithCredential,
   signInWithEmailAndPassword, updatePassword, setPersistence,
   browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, getDocs, addDoc,
   collection, updateDoc, deleteDoc, onSnapshot, query, orderBy
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import {
   getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject
-} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
 // ── CONFIG ──
 const firebaseConfig = {
-  apiKey: "AIzaSyAGLX_xxH_dQ06epX4XCXtuSHN0DwZFMjA",
-  authDomain: "stress-auti-action.firebaseapp.com",
-  projectId: "stress-auti-action",
-  storageBucket: "stress-auti-action.firebasestorage.app",
-  messagingSenderId: "792580618622",
-  appId: "1:792580618622:web:f0efb1d630e795584d5b2f"
+  apiKey: "AIzaSyC-cY0ZAwrW9EOcaWeZupli693qs9T1j-0",
+  authDomain: "studywithlive.firebaseapp.com",
+  projectId: "studywithlive",
+  storageBucket: "studywithlive.firebasestorage.app",
+  messagingSenderId: "850295583492",
+  appId: "1:850295583492:web:21f3b09fa1635309649651"
 };
 
 const app  = initializeApp(firebaseConfig);
@@ -410,7 +410,7 @@ const stor = getStorage(app);
 
 setPersistence(auth, browserLocalPersistence).catch(()=>{});
 
-const ADMIN_EMAIL = 'adha86614@gmail.com';
+const ADMIN_EMAIL = 'adha86614@gmail.com'; // tukar ikut email admin anda
 
 // ── STATE ──
 let currentUser  = null;
