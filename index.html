@@ -1,1070 +1,966 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StressTogether</title>
-  <link rel="manifest" href="./manifest.json" />
-  <meta name="theme-color" content="#020617" />
-  <link rel="icon" type="image/png" href="./icons/icon-192.png" />
-  <style>
-    :root {
-      --bg: #020617;
-      --text: #e5e7eb;
-      --subtext: #9ca3af;
-      --border: #1f2937;
-      --border-2: #4b5563;
-      --indigo: #6366f1;
-      --violet: #8b5cf6;
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; }
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
-      background: var(--bg); color: var(--text);
-    }
-    .page { display: block; }
-    .hidden { display: none !important; }
-    .container {
-      max-width: 640px; margin: 10vh auto; padding: 24px;
-      border: 1px solid var(--border); border-radius: 16px;
-      background: rgba(2,6,23,0.6); backdrop-filter: blur(6px);
-    }
-    .app-title { margin: 0 0 8px; font-size: 28px; font-weight: 700; }
-    .subtext { margin: 0 0 24px; color: var(--subtext); }
-    .btn-primary {
-      appearance: none; border: none; cursor: pointer;
-      padding: 12px 16px; border-radius: 12px; color: white;
-      background: linear-gradient(90deg, var(--indigo), var(--violet));
-      box-shadow: 0 8px 24px rgba(99,102,241,0.30);
-    }
-    .btn-primary:active { transform: translateY(1px); }
-    .btn-ghost {
-      appearance: none; border: 1px solid var(--border-2);
-      background: transparent; color: var(--text);
-      padding: 10px 14px; border-radius: 12px; cursor: pointer;
-    }
-    .btn-ghost:active { transform: translateY(1px); }
-    .btn-danger {
-      appearance: none; border: 1px solid #ef4444;
-      background: transparent; color: #ef4444;
-      padding: 10px 14px; border-radius: 12px; cursor: pointer;
-    }
-    .input {
-      width: 100%; padding: 12px 14px; border-radius: 10px;
-      border: 1px solid var(--border); background: #0b1220; color: var(--text);
-    }
-    .input::placeholder { color: var(--subtext); }
-    .input.small { width: auto; padding: 8px 10px; }
-    .label { font-size: 12px; color: var(--subtext); margin-bottom: 6px; display: block; }
-    .home-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 16px; border-bottom: 1px solid var(--border);
-    }
-    .brand { margin: 0; font-size: 22px; font-weight: 700; }
-    .home-main { padding: 16px; }
-    .toolbar {
-      display: grid; grid-template-columns: 1fr auto;
-      gap: 12px; align-items: center; margin-bottom: 16px;
-    }
-    .upload-group { display: flex; gap: 12px; align-items: center; }
-    .section-title { margin: 8px 0 12px; font-size: 18px; }
-    .upload-preview .preview-card {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 16px; border: 1px solid var(--border);
-      border-radius: 12px; padding: 16px;
-    }
-    .preview-actions { display: flex; gap: 10px; margin-top: 12px; }
-    .gallery {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px; margin-top: 16px;
-    }
-    .card {
-      border: 1px solid var(--border); border-radius: 12px; padding: 12px;
-      background: #0b1220; display: flex; flex-direction: column; gap: 10px;
-    }
-    .card-title { font-size: 16px; margin: 0; }
-    .card-sub { color: var(--subtext); font-size: 12px; }
-    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .video { width: 100%; height: auto; background: black; border-radius: 10px; }
-    .modal {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.65);
-      display: grid; place-items: center; z-index: 1000;
-    }
-    .modal-content {
-      width: min(920px, 92vw); background: #0b1220;
-      border: 1px solid var(--border); border-radius: 16px; padding: 16px;
-      max-height: 92vh; overflow-y: auto;
-    }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .player-controls { display: flex; gap: 12px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
-    .control-group { display: flex; gap: 8px; align-items: center; }
-    .progress {
-      position: relative; height: 10px; border-radius: 8px;
-      background: #0d1628; border: 1px solid var(--border);
-      margin-top: 10px; display: flex; align-items: center;
-    }
-    .progress-bar {
-      height: 100%; width: 0%; border-radius: 8px;
-      background: linear-gradient(90deg, var(--indigo), var(--violet));
-      transition: width 0.2s ease;
-    }
-    .progress-label { margin-left: 8px; font-size: 11px; color: var(--subtext); }
-    .convert-group {
-      margin: 12px 0; display: flex; align-items: center; gap: 8px;
-      color: #cbd5e1; font-size: 0.9rem;
-      background: rgba(255,255,255,0.05); padding: 10px;
-      border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);
-    }
-    .convert-group input { width: 18px; height: 18px; cursor: pointer; }
-    .status-msg { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; display: block; }
-    #player { background: #000; min-height: 120px; }
-    #player:not([src]), #player[src=""] { min-height: 40px; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="StudyWithLive">
+<link rel="manifest" href="manifest.json">
+<title>StudyWithLive</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0a14;
+  --surface:#12121f;
+  --card:#1a1a2e;
+  --border:rgba(255,255,255,0.08);
+  --border-mid:rgba(255,255,255,0.15);
+  --text:#e8eaf6;
+  --subtext:#7986cb;
+  --grad1:#7c4dff;
+  --grad2:#448aff;
+  --danger:#ff5252;
+  --green:#00e676;
+  --amber:#ffab40;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
 
-    /* ── PIN ── */
-    .pin-field {
-      width: 100%; max-width: 320px; padding: 12px 16px;
-      background: #0b1220; border: 1px solid var(--border);
-      border-radius: 10px; color: var(--text); font-size: 22px;
-      outline: none; margin-bottom: 12px; letter-spacing: 8px;
-      text-align: center;
-    }
-    .pin-field:focus { border-color: var(--indigo); }
-    .pin-btn {
-      width: 100%; max-width: 320px; padding: 13px;
-      border-radius: 10px; border: none;
-      background: linear-gradient(90deg, var(--indigo), var(--violet));
-      color: white; font-size: 15px; font-weight: 600;
-      cursor: pointer; margin-bottom: 10px; display: block;
-    }
-    .pin-btn:active { opacity: 0.85; }
-    .pin-error {
-      color: #ef4444; font-size: 13px; margin: 8px 0;
-      min-height: 20px;
-    }
+/* ── LOGIN ── */
+#section-login{
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px;background:var(--bg);
+}
+#section-login.hide{display:none}
+.login-logo{font-size:52px;margin-bottom:8px}
+.login-title{font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--subtext);margin-bottom:32px;text-align:center}
+.login-field{
+  width:100%;max-width:320px;padding:13px 16px;
+  background:var(--card);border:1px solid var(--border-mid);
+  border-radius:12px;color:var(--text);font-size:14px;outline:none;
+  margin-bottom:10px;letter-spacing:0;
+}
+.login-field:focus{border-color:var(--grad1)}
+.login-field.pin-field{letter-spacing:6px;text-align:center;font-size:20px}
+.login-btn{
+  width:100%;max-width:320px;padding:14px;border-radius:12px;border:none;
+  background:linear-gradient(135deg,var(--grad1),var(--grad2));
+  color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;
+}
+.login-btn:active{opacity:0.85}
+.login-btn.secondary{background:var(--card);border:1px solid var(--border-mid);color:var(--text)}
+.login-divider{display:flex;align-items:center;gap:10px;width:100%;max-width:320px;margin:4px 0 12px}
+.login-divider-line{flex:1;height:1px;background:var(--border-mid)}
+.login-divider-text{font-size:12px;color:var(--subtext)}
+#pin-box{display:none;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:320px}
+#login-msg{font-size:13px;color:var(--danger);text-align:center;min-height:18px;margin-top:4px;max-width:320px}
 
-    /* ── Creator Page ── */
-    #page-creator .container { max-width: 480px; }
-    .creator-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
-    .creator-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 14px; border: 1px solid var(--border);
-      border-radius: 12px; background: #0b1220; cursor: pointer;
-      transition: border-color 0.15s;
-    }
-    .creator-item:hover { border-color: var(--indigo); }
-    .creator-item.active { border-color: var(--violet); background: rgba(139,92,246,0.1); }
-    .creator-name { font-size: 16px; font-weight: 600; }
-    .creator-meta { font-size: 12px; color: var(--subtext); }
-    .creator-actions { display: flex; gap: 6px; }
-    .creator-add { display: flex; gap: 8px; margin-top: 8px; }
-    .creator-add .input { flex: 1; }
+/* ── APP ── */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
 
-    /* ── Folder bar ── */
-    .folder-bar {
-      display: flex; gap: 8px; align-items: center;
-      margin-bottom: 12px; flex-wrap: wrap;
-    }
-    .folder-tab {
-      padding: 6px 14px; border-radius: 20px; cursor: pointer;
-      border: 1px solid var(--border); background: transparent; color: var(--subtext);
-      font-size: 13px; transition: all 0.15s;
-    }
-    .folder-tab.active { background: var(--indigo); border-color: var(--indigo); color: white; }
-    .folder-tab:hover:not(.active) { border-color: var(--border-2); color: var(--text); }
-    .btn-new-folder {
-      padding: 6px 12px; border-radius: 20px; cursor: pointer;
-      border: 1px dashed var(--border-2); background: transparent; color: var(--subtext);
-      font-size: 13px;
-    }
-    .btn-new-folder:hover { color: var(--text); border-color: var(--text); }
+/* ── TOPBAR ── */
+#topbar{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#topbar h1{font-size:17px;font-weight:700;flex:1;
+  background:linear-gradient(135deg,var(--grad1),var(--grad2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-btn{
+  display:flex;align-items:center;justify-content:center;
+  min-width:36px;height:36px;padding:0 10px;
+  border-radius:10px;border:1px solid var(--border-mid);
+  background:var(--card);color:var(--text);cursor:pointer;font-size:14px;
+  white-space:nowrap;gap:4px;flex-shrink:0;
+}
+.top-btn:active{background:var(--border-mid)}
 
-    /* ── Move modal ── */
-    .folder-list-modal { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
-    .folder-choice {
-      padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px;
-      background: #0b1220; cursor: pointer; font-size: 14px;
-    }
-    .folder-choice:hover { border-color: var(--indigo); }
-  </style>
+/* ── MAIN BODY ── */
+#main-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
+
+/* ── FOLDER BAR ── */
+#folder-bar{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:14px;padding-bottom:4px}
+#folder-bar::-webkit-scrollbar{display:none}
+.folder-tab{
+  padding:7px 16px;border-radius:20px;cursor:pointer;flex-shrink:0;
+  border:1px solid var(--border-mid);background:transparent;color:var(--subtext);
+  font-size:13px;font-weight:500;white-space:nowrap;
+}
+.folder-tab.active{background:linear-gradient(135deg,var(--grad1),var(--grad2));border-color:transparent;color:#fff}
+.folder-tab:active{opacity:0.8}
+.btn-new-folder{
+  padding:7px 14px;border-radius:20px;cursor:pointer;flex-shrink:0;
+  border:1px dashed var(--border-mid);background:transparent;color:var(--subtext);
+  font-size:13px;
+}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.search-input{
+  flex:1;min-width:0;padding:10px 14px;border-radius:10px;
+  border:1px solid var(--border-mid);background:var(--card);color:var(--text);
+  font-size:14px;outline:none;
+}
+.search-input:focus{border-color:var(--grad1)}
+.btn-upload{
+  padding:10px 16px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--grad1),var(--grad2));
+  color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+
+/* ── GALLERY ── */
+#gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;
+}
+.video-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;
+}
+.card-title{font-size:15px;font-weight:600;margin:0;line-height:1.4}
+.card-meta{color:var(--subtext);font-size:12px;display:flex;gap:8px;flex-wrap:wrap}
+.card-actions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{
+  padding:8px 14px;border-radius:8px;border:1px solid var(--border-mid);
+  background:transparent;color:var(--text);font-size:13px;cursor:pointer;
+  font-weight:500;
+}
+.btn:active{background:var(--border-mid)}
+.btn.primary{background:linear-gradient(135deg,var(--grad1),var(--grad2));border:none;color:#fff}
+.btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--subtext);font-size:14px;
+}
+
+/* ── UPLOAD PREVIEW ── */
+#upload-preview{
+  background:var(--card);border:1px solid var(--border-mid);
+  border-radius:14px;padding:16px;margin-bottom:16px;display:none;
+}
+#upload-preview h3{font-size:16px;margin-bottom:12px;color:var(--grad2)}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.preview-grid{grid-template-columns:1fr}}
+.preview-video{width:100%;border-radius:10px;background:#000;max-height:200px}
+.field-label{font-size:11px;color:var(--subtext);margin-bottom:5px;display:block}
+.field{
+  width:100%;padding:10px 12px;border-radius:8px;
+  border:1px solid var(--border-mid);background:var(--bg);
+  color:var(--text);font-size:14px;outline:none;
+}
+.field:focus{border-color:var(--grad1)}
+.convert-group{
+  display:flex;align-items:center;gap:8px;margin:10px 0;
+  padding:10px;border-radius:8px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  color:var(--text);font-size:13px;
+}
+.convert-group input{width:18px;height:18px;cursor:pointer;accent-color:var(--grad1)}
+.progress-wrap{
+  margin-top:10px;height:8px;border-radius:4px;
+  background:var(--border);overflow:hidden;display:none;
+}
+.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--grad1),var(--grad2));transition:width 0.2s}
+.progress-label{font-size:11px;color:var(--subtext);margin-top:4px;display:block}
+.process-note{font-size:11px;color:var(--amber);margin-top:4px;display:none}
+.preview-actions{display:flex;gap:8px;margin-top:12px}
+
+/* ── FOLDER SECTION ── */
+#section-folders{display:none}
+.drawer-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:12px;margin-bottom:8px;
+  display:flex;gap:8px;align-items:center;
+}
+.drawer-input{
+  flex:1;border:none;background:transparent;color:var(--text);
+  border-bottom:1px solid var(--border-mid);outline:none;padding:4px;
+  font-size:14px;
+}
+
+/* ── PLAYER MODAL ── */
+#player-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);
+  display:grid;place-items:center;z-index:100;display:none;
+}
+.player-content{
+  width:min(900px,94vw);background:var(--card);
+  border:1px solid var(--border-mid);border-radius:18px;
+  padding:16px;max-height:94vh;overflow-y:auto;
+}
+.player-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.player-title{font-size:16px;font-weight:600;flex:1;margin-right:10px;line-height:1.3}
+#player{width:100%;border-radius:10px;background:#000;min-height:100px}
+.player-controls{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+
+/* ── MOVE MODAL ── */
+#move-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);
+  display:grid;place-items:center;z-index:101;display:none;
+}
+.move-content{
+  width:min(360px,92vw);background:var(--card);
+  border:1px solid var(--border-mid);border-radius:18px;padding:16px;
+}
+.folder-choice{
+  padding:12px 14px;border:1px solid var(--border-mid);
+  border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px;
+}
+.folder-choice:active{border-color:var(--grad1)}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--card);border:1px solid var(--border-mid);
+  border-radius:10px;padding:10px 18px;font-size:13px;
+  z-index:300;opacity:0;transition:all 0.25s;pointer-events:none;
+  white-space:nowrap;max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--green);color:var(--green)}
+#toast.err{border-color:var(--danger);color:var(--danger)}
+
+/* ── SETUP PIN BUTTON ── */
+#btn-setup-pin{display:none}
+
+/* ── SECTION PANEL ── */
+.section-panel{
+  position:fixed;inset:0;background:var(--bg);z-index:50;
+  display:none;flex-direction:column;
+}
+.section-panel.show{display:flex}
+.panel-topbar{
+  display:flex;align-items:center;gap:10px;padding:12px 16px;
+  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.panel-topbar h2{font-size:16px;font-weight:600;flex:1}
+.panel-body{flex:1;overflow-y:auto;padding:16px}
+.panel-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+</style>
 </head>
 <body>
 
-  <!-- ══════════════════ LOGIN PAGE ══════════════════ -->
-  <div id="page-login" class="page">
-    <div class="container" style="text-align:center">
-      <h1 class="app-title">StressTogether</h1>
-      <p class="subtext">Simpan Video & MP3 — pendek hingga panjang.</p>
-      <div id="login-pin-section" class="hidden">
-        <p style="color:var(--subtext);margin-bottom:16px">Masukkan PIN</p>
-        <input class="pin-field" id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
-        <div class="pin-error hidden" id="pin-error">PIN salah. Cuba lagi.</div>
-        <button class="pin-btn" id="btn-pin-submit">Masuk dengan PIN</button>
-        <button id="btn-use-google-instead" class="btn-ghost" style="font-size:13px;width:100%;max-width:320px">Guna Google Login</button>
-      </div>
-      <div id="login-google-section">
-        <button id="btn-google" class="btn-primary">Login dengan Google</button>
-      </div>
-    </div>
+<!-- ════════════════ LOGIN ════════════════ -->
+<div id="section-login">
+  <div class="login-logo">🎬</div>
+  <div class="login-title">StudyWithLive</div>
+  <div class="login-sub">Simpan & tonton video anda bila-bila masa</div>
+
+  <button class="login-btn" onclick="doLoginGoogle()">Login dengan Google</button>
+
+  <div class="login-divider">
+    <div class="login-divider-line"></div>
+    <div class="login-divider-text">atau</div>
+    <div class="login-divider-line"></div>
   </div>
 
-  <!-- ══════════════════ SETUP PIN PAGE ══════════════════ -->
-  <div id="page-setup-pin" class="page hidden">
-    <div class="container" style="text-align:center">
-      <h1 class="app-title">Tetapkan PIN</h1>
-      <p class="subtext" id="setup-pin-desc">Cipta PIN untuk login pantas.</p>
-      <input class="pin-field" id="setup-pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
-      <div class="pin-error hidden" id="setup-pin-error"></div>
-      <button class="pin-btn" id="btn-setup-pin-submit">Seterusnya</button>
-      <button id="btn-skip-pin" class="btn-ghost" style="font-size:13px;width:100%;max-width:320px">Langkau — Guna Google Sahaja</button>
-    </div>
+  <button class="login-btn secondary" onclick="togglePinBox()">🔐 Login sebagai Admin</button>
+  <div id="pin-box">
+    <input class="login-field pin-field" id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="PIN (4-6 digit)" autocomplete="new-password">
+    <button class="login-btn" onclick="doLoginPin()">Masuk</button>
+  </div>
+  <div id="login-msg"></div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="app" style="display:none">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <h1>🎬 StudyWithLive</h1>
+    <button class="top-btn" id="btn-setup-pin" onclick="setupAdminPin()">🔐 PIN</button>
+    <button class="top-btn" onclick="openFolderPanel()">🗂 Folder</button>
+    <button class="top-btn" onclick="doLogout()">Keluar</button>
   </div>
 
-  <!-- ══════════════════ CREATOR PAGE ══════════════════ -->
-  <div id="page-creator" class="page hidden">
-    <div class="container">
-      <h1 class="app-title">StressTogether</h1>
-      <p class="subtext">Pilih atau buat channel anda.</p>
+  <!-- MAIN -->
+  <div id="main-body">
 
-      <div class="creator-list" id="creator-list">
-        <!-- diisi JS -->
-      </div>
+    <!-- FOLDER BAR -->
+    <div id="folder-bar"></div>
 
-      <div class="creator-add">
-        <input id="new-creator-input" class="input" placeholder="Nama channel baru..." />
-        <button id="btn-add-creator" class="btn-primary">+ Tambah</button>
-      </div>
-
-      <div style="margin-top:16px; text-align:right">
-        <button id="btn-logout-creator" class="btn-ghost" style="font-size:12px">Logout</button>
-      </div>
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <input class="search-input" id="search" type="search" placeholder="Cari video...">
+      <button class="btn-upload" onclick="document.getElementById('file-input').click()">+ Tambah Video</button>
+      <input id="file-input" type="file" accept="video/*,audio/*" style="display:none" onchange="handleFileSelect(event)">
     </div>
-  </div>
 
-  <!-- ══════════════════ HOME PAGE ══════════════════ -->
-  <div id="page-home" class="page hidden">
-    <header class="home-header">
-      <div class="header-left" style="display:flex;align-items:center;gap:10px">
-        <button id="btn-back-creator" class="btn-ghost" style="padding:8px 10px">←</button>
+    <!-- UPLOAD PREVIEW -->
+    <div id="upload-preview">
+      <h3>Preview Fail</h3>
+      <div class="preview-grid">
+        <video id="preview-video" class="preview-video" controls></video>
         <div>
-          <h2 class="brand" style="margin:0">StressTogether</h2>
-          <span id="active-creator-label" style="font-size:12px;color:var(--subtext)"></span>
-        </div>
-      </div>
-      <div class="header-right">
-        <button id="btn-logout" class="btn-ghost">Logout</button>
-      </div>
-    </header>
+          <label class="field-label">Tajuk</label>
+          <input class="field" id="preview-title" placeholder="Masukkan tajuk...">
 
-    <main class="home-main">
+          <label class="field-label" style="margin-top:10px">Simpan ke Folder</label>
+          <select class="field" id="preview-folder" style="cursor:pointer"></select>
 
-      <!-- Folder bar -->
-      <div class="folder-bar" id="folder-bar">
-        <!-- diisi JS -->
-      </div>
-
-      <div class="toolbar">
-        <input id="search" type="search" class="input" placeholder="Cari rakaman..." />
-        <div class="upload-group">
-          <button id="btn-upload" class="btn-primary">Tambah Fail</button>
-          <input id="file-input" type="file" accept="video/*,audio/*" class="hidden" />
-        </div>
-      </div>
-
-      <section id="upload-preview" class="upload-preview hidden">
-        <h3 class="section-title">Preview Fail</h3>
-        <div class="preview-card">
-          <video id="preview-video" controls class="video" style="max-height:200px"></video>
-          <div class="preview-meta">
-            <label class="label">Tajuk Simpanan</label>
-            <input id="preview-title" class="input" placeholder="Masukkan tajuk..." />
-
-            <label class="label" style="margin-top:10px">Simpan ke Folder</label>
-            <select id="preview-folder" class="input"></select>
-
-            <div id="convert-container" class="convert-group">
-              <input type="checkbox" id="check-convert">
-              <label for="check-convert">Tukar ke MP3 (Audio Sahaja)</label>
-            </div>
-            <div class="preview-actions">
-              <button id="btn-save-upload" class="btn-primary">Simpan ke Cloud</button>
-              <button id="btn-cancel-upload" class="btn-ghost">Batal</button>
-            </div>
-            <div id="upload-progress" class="progress hidden">
-              <div id="upload-bar" class="progress-bar"></div>
-              <span id="upload-label" class="progress-label">Sedia...</span>
-            </div>
-            <span id="process-note" class="status-msg hidden">*Jangan tutup tab semasa proses menukar audio.</span>
+          <div class="convert-group" id="convert-group">
+            <input type="checkbox" id="check-convert">
+            <label for="check-convert">Tukar ke MP3 (Audio sahaja)</label>
           </div>
-        </div>
-      </section>
 
-      <section id="gallery" class="gallery"></section>
-    </main>
-  </div>
+          <div class="preview-actions">
+            <button class="btn primary" onclick="doUpload()">☁ Simpan ke Cloud</button>
+            <button class="btn" onclick="cancelUpload()">Batal</button>
+          </div>
 
-  <!-- ══════════════════ PLAYER MODAL ══════════════════ -->
-  <div id="player-modal" class="modal hidden">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="player-title" class="section-title"></h3>
-        <button id="btn-close-player" class="btn-ghost">Tutup</button>
-      </div>
-      <video id="player" class="video" controls preload="metadata"></video>
-      <div class="player-controls">
-        <div class="control-group">
-          <label class="label">Kelajuan</label>
-          <select id="playback-rate" class="input small">
-            <option value="0.75">0.75×</option>
-            <option value="1" selected>1×</option>
-            <option value="1.5">1.5×</option>
-            <option value="2">2×</option>
-          </select>
-        </div>
-        <div class="control-group">
-          <button id="btn-skip-back" class="btn-ghost">« 10s</button>
-          <button id="btn-skip-forward" class="btn-ghost">10s »</button>
-        </div>
-        <div class="control-group">
-          <button id="btn-pip" class="btn-ghost">⧉ Mini Player</button>
+          <div class="progress-wrap" id="progress-wrap">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <span class="progress-label" id="progress-label"></span>
+          <span class="process-note" id="process-note">*Jangan tutup tab semasa menukar audio.</span>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ══════════════════ MOVE MODAL ══════════════════ -->
-  <div id="move-modal" class="modal hidden">
-    <div class="modal-content" style="max-width:360px">
-      <div class="modal-header">
-        <h3 class="section-title">Pindah ke Folder</h3>
-        <button id="btn-close-move" class="btn-ghost">Batal</button>
+    <!-- GALLERY -->
+    <div id="gallery"></div>
+  </div>
+</div>
+
+<!-- ════════════════ PLAYER MODAL ════════════════ -->
+<div id="player-modal" onclick="closePlayer(event)">
+  <div class="player-content" onclick="event.stopPropagation()">
+    <div class="player-header">
+      <div class="player-title" id="player-title"></div>
+      <button class="btn sm" onclick="closePlayer()">✕ Tutup</button>
+    </div>
+    <video id="player" class="preview-video" controls preload="metadata" style="max-height:60vh"></video>
+    <div class="player-controls">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px;color:var(--subtext)">Laju</span>
+        <select id="playback-rate" class="field" style="width:auto;padding:6px 10px;font-size:13px" onchange="player.playbackRate=this.value">
+          <option value="0.75">0.75×</option>
+          <option value="1" selected>1×</option>
+          <option value="1.5">1.5×</option>
+          <option value="2">2×</option>
+        </select>
       </div>
-      <div class="folder-list-modal" id="move-folder-list"></div>
+      <button class="btn sm" onclick="player.currentTime-=10">« 10s</button>
+      <button class="btn sm" onclick="player.currentTime+=10">10s »</button>
+      <button class="btn sm" id="btn-pip" onclick="togglePip()">⧉ Mini</button>
     </div>
   </div>
+</div>
 
-  <script type="module" src="./firebase.js"></script>
-  <script type="module">
-    import {
-      auth, signInGoogle, signOutGoogle,
-      db, storageRefFor, userVideoDoc, subscribeVideos
-    } from "./firebase.js";
+<!-- ════════════════ MOVE MODAL ════════════════ -->
+<div id="move-modal" onclick="closeMoveModal(event)">
+  <div class="move-content" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-size:16px;font-weight:600">Pindah ke Folder</div>
+      <button class="btn sm" onclick="closeMoveModal()">✕</button>
+    </div>
+    <div id="move-list"></div>
+  </div>
+</div>
 
-    import {
-      setDoc, updateDoc, deleteDoc, collection,
-      getDocs, doc, getDoc
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<!-- ════════════════ FOLDER PANEL ════════════════ -->
+<div id="folder-panel" class="section-panel">
+  <div class="panel-topbar">
+    <button class="btn sm" onclick="closeFolderPanel()">← Balik</button>
+    <h2>🗂 Urus Folder</h2>
+    <button class="btn sm primary" onclick="addFolder()">+ Tambah</button>
+  </div>
+  <div class="panel-body" id="folder-list"></div>
+</div>
 
-    import {
-      uploadBytesResumable, getDownloadURL, deleteObject
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+<!-- TOAST -->
+<div id="toast"></div>
 
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<!-- ════════════════ FIREBASE ════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut,
+  onAuthStateChanged, EmailAuthProvider, linkWithCredential,
+  signInWithEmailAndPassword, updatePassword, setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, getDocs, addDoc,
+  collection, updateDoc, deleteDoc, onSnapshot, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-storage.js";
 
-    // ── Elements ──
-    const pageLogin   = document.getElementById('page-login');
-    const pageCreator = document.getElementById('page-creator');
-    const pageHome    = document.getElementById('page-home');
+// ── CONFIG ──
+const firebaseConfig = {
+  apiKey: "AIzaSyAGLX_xxH_dQ06epX4XCXtuSHN0DwZFMjA",
+  authDomain: "stress-auti-action.firebaseapp.com",
+  projectId: "stress-auti-action",
+  storageBucket: "stress-auti-action.firebasestorage.app",
+  messagingSenderId: "792580618622",
+  appId: "1:792580618622:web:f0efb1d630e795584d5b2f"
+};
 
-    const btnGoogle          = document.getElementById('btn-google');
-    const btnLogout          = document.getElementById('btn-logout');
-    const btnLogoutCreator   = document.getElementById('btn-logout-creator');
-    const btnBackCreator     = document.getElementById('btn-back-creator');
-    const activeCreatorLabel = document.getElementById('active-creator-label');
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const stor = getStorage(app);
 
-    const creatorList      = document.getElementById('creator-list');
-    const newCreatorInput  = document.getElementById('new-creator-input');
-    const btnAddCreator    = document.getElementById('btn-add-creator');
+setPersistence(auth, browserLocalPersistence).catch(()=>{});
 
-    const folderBar    = document.getElementById('folder-bar');
-    const searchInput  = document.getElementById('search');
-    const btnUpload    = document.getElementById('btn-upload');
-    const fileInput    = document.getElementById('file-input');
-    const previewSection = document.getElementById('upload-preview');
-    const previewVideo   = document.getElementById('preview-video');
-    const previewTitle   = document.getElementById('preview-title');
-    const previewFolder  = document.getElementById('preview-folder');
-    const btnSaveUpload  = document.getElementById('btn-save-upload');
-    const btnCancelUpload= document.getElementById('btn-cancel-upload');
-    const uploadProgress = document.getElementById('upload-progress');
-    const uploadBar      = document.getElementById('upload-bar');
-    const uploadLabel    = document.getElementById('upload-label');
-    const gallery        = document.getElementById('gallery');
-    const checkConvert   = document.getElementById('check-convert');
-    const convertContainer = document.getElementById('convert-container');
-    const processNote    = document.getElementById('process-note');
+const ADMIN_EMAIL = 'adha86614@gmail.com';
 
-    const playerModal  = document.getElementById('player-modal');
-    const playerTitle  = document.getElementById('player-title');
-    const player       = document.getElementById('player');
-    const btnClosePlayer = document.getElementById('btn-close-player');
-    const playbackRate = document.getElementById('playback-rate');
-    const btnSkipBack  = document.getElementById('btn-skip-back');
-    const btnSkipForward = document.getElementById('btn-skip-forward');
-    const btnPip       = document.getElementById('btn-pip');
+// ── STATE ──
+let currentUser  = null;
+let allFolders   = [];
+let allVideos    = [];
+let activeFolder = 'all';
+let tempFile     = null;
+let tempExt      = 'mp4';
+let unsubVideos  = null;
+let moveTarget   = null;
+const playerCache = new Map();
 
-    const moveModal       = document.getElementById('move-modal');
-    const btnCloseMove    = document.getElementById('btn-close-move');
-    const moveFolderList  = document.getElementById('move-folder-list');
+// ── EXPOSE TO GLOBAL ──
+window.doLoginGoogle   = doLoginGoogle;
+window.doLoginPin      = doLoginPin;
+window.togglePinBox    = togglePinBox;
+window.setupAdminPin   = setupAdminPin;
+window.doLogout        = doLogout;
+window.handleFileSelect= handleFileSelect;
+window.cancelUpload    = cancelUpload;
+window.doUpload        = doUpload;
+window.closePlayer     = closePlayer;
+window.togglePip       = togglePip;
+window.closeMoveModal  = closeMoveModal;
+window.openFolderPanel = openFolderPanel;
+window.closeFolderPanel= closeFolderPanel;
+window.addFolder       = addFolder;
 
-    // ── State ──
-    let currentUser    = null;
-    let activeCreator  = null;   // { id, name }
-    let creators       = [];     // [{ id, name }]
-    let folders        = [];     // [{ id, name }]
-    let activeFolder   = 'all';  // 'all' | folder id
-    let videos         = [];
-    let tempFile       = null;
-    let tempExt        = 'mp4';
-    let unsubscribe    = null;
-    let moveTargetItem = null;
-    const playerCache  = new Map();
+const player = document.getElementById('player');
 
-    // ══════════════════════════════════════
-    //  AUTH
-    // ══════════════════════════════════════
-    btnGoogle.addEventListener('click', async () => {
-      try { await signInGoogle(); } catch { alert('Login gagal.'); }
+// ════════════════════════════════════
+// AUTH
+// ════════════════════════════════════
+function togglePinBox() {
+  const box = document.getElementById('pin-box');
+  const open = box.style.display === 'flex';
+  box.style.display = open ? 'none' : 'flex';
+  if (!open) setTimeout(() => document.getElementById('pin-input').focus(), 80);
+}
+
+async function doLoginGoogle() {
+  const msg = document.getElementById('login-msg');
+  msg.textContent = 'Membuka Google...';
+  try {
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    msg.textContent = '';
+  } catch(e) {
+    msg.textContent = e.message || 'Login gagal';
+  }
+}
+
+async function doLoginPin() {
+  const pin = document.getElementById('pin-input').value.trim();
+  const msg = document.getElementById('login-msg');
+  if (!pin || !/^\d{4,6}$/.test(pin)) { msg.textContent = 'PIN mesti 4-6 digit angka'; return; }
+  msg.textContent = 'Mengesahkan...';
+  try {
+    await signInWithEmailAndPassword(auth, ADMIN_EMAIL, pin);
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-box').style.display = 'none';
+    msg.textContent = '';
+  } catch(e) {
+    if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
+      msg.textContent = '❌ PIN salah. Cuba lagi.';
+    } else if (e.code === 'auth/user-not-found') {
+      msg.textContent = '❌ PIN belum ditetapkan. Login Google dulu.';
+    } else {
+      msg.textContent = '❌ ' + e.message;
+    }
+  }
+}
+
+async function setupAdminPin() {
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) { showToast('Hanya admin boleh setup PIN','err'); return; }
+  const pin = prompt('Tetapkan PIN Admin baru (4-6 digit angka):');
+  if (!pin || !/^\d{4,6}$/.test(pin)) { showToast('PIN mesti 4-6 digit angka','err'); return; }
+  try {
+    const credential = EmailAuthProvider.credential(ADMIN_EMAIL, pin);
+    try {
+      await linkWithCredential(currentUser, credential);
+    } catch(le) {
+      if (le.code === 'auth/provider-already-linked' || le.code === 'auth/email-already-in-use') {
+        await updatePassword(currentUser, pin);
+      } else throw le;
+    }
+    showToast('✅ PIN berjaya ditetapkan!','ok');
+  } catch(e) { showToast('❌ Gagal: ' + e.message,'err'); }
+}
+
+async function doLogout() {
+  if (!confirm('Log keluar?')) return;
+  await signOut(auth);
+}
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('section-login').classList.add('hide');
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('app').style.flexDirection = 'column';
+    document.getElementById('btn-setup-pin').style.display =
+      user.email === ADMIN_EMAIL ? 'flex' : 'none';
+    loadFolders();
+    loadVideos();
+    showToast('Selamat datang, ' + (user.displayName || user.email.split('@')[0]),'ok');
+  } else {
+    document.getElementById('section-login').classList.remove('hide');
+    document.getElementById('app').style.display = 'none';
+    teardown();
+  }
+});
+
+// ════════════════════════════════════
+// FOLDERS
+// ════════════════════════════════════
+function colFolders() {
+  return collection(db, 'users', currentUser.uid, 'swl_folders');
+}
+
+async function loadFolders() {
+  const snap = await getDocs(query(colFolders(), orderBy('createdAt')));
+  allFolders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderFolderBar();
+  renderFolderSelect();
+  renderFolderPanel();
+}
+
+function renderFolderBar() {
+  const bar = document.getElementById('folder-bar');
+  bar.innerHTML = '';
+
+  const allTab = document.createElement('button');
+  allTab.className = 'folder-tab' + (activeFolder === 'all' ? ' active' : '');
+  allTab.textContent = '📂 Semua';
+  allTab.onclick = () => { activeFolder = 'all'; renderFolderBar(); renderGallery(); };
+  bar.appendChild(allTab);
+
+  // Tab Video Lama (tiada folder)
+  const oldTab = document.createElement('button');
+  oldTab.className = 'folder-tab' + (activeFolder === '__old__' ? ' active' : '');
+  oldTab.textContent = '📼 Video Lama';
+  oldTab.onclick = () => { activeFolder = '__old__'; renderFolderBar(); renderGallery(); };
+  bar.appendChild(oldTab);
+
+  allFolders.forEach(f => {
+    const tab = document.createElement('button');
+    tab.className = 'folder-tab' + (activeFolder === f.id ? ' active' : '');
+    tab.textContent = '🗂 ' + f.name;
+    tab.onclick = () => { activeFolder = f.id; renderFolderBar(); renderGallery(); };
+    bar.appendChild(tab);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn-new-folder';
+  addBtn.textContent = '+ Folder';
+  addBtn.onclick = addFolder;
+  bar.appendChild(addBtn);
+}
+
+function renderFolderSelect() {
+  const sel = document.getElementById('preview-folder');
+  sel.innerHTML = '<option value="">— Tiada Folder —</option>';
+  allFolders.forEach(f => {
+    const opt = document.createElement('option');
+    opt.value = f.id; opt.textContent = f.name;
+    sel.appendChild(opt);
+  });
+  if (activeFolder !== 'all' && activeFolder !== '__old__') sel.value = activeFolder;
+}
+
+async function addFolder() {
+  const name = prompt('Nama folder baru:');
+  if (!name?.trim()) return;
+  await addDoc(colFolders(), { name: name.trim(), createdAt: Date.now() });
+  await loadFolders();
+  showToast('✅ Folder ditambah','ok');
+}
+
+function renderFolderPanel() {
+  const list = document.getElementById('folder-list');
+  list.innerHTML = '';
+  if (!allFolders.length) {
+    list.innerHTML = '<div style="color:var(--subtext);font-size:14px;text-align:center;padding:24px">Belum ada folder.</div>';
+    return;
+  }
+  allFolders.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'drawer-card';
+    div.innerHTML = `
+      <input class="drawer-input" value="${escHtml(f.name)}" placeholder="Nama folder...">
+      <button class="btn sm danger">✕</button>
+    `;
+    div.querySelector('input').addEventListener('change', e =>
+      updateDoc(doc(db,'users',currentUser.uid,'swl_folders',f.id), { name: e.target.value }));
+    div.querySelector('button').addEventListener('click', async () => {
+      if (!confirm('Padam folder "' + f.name + '"? Video dalam folder tidak dipadam.')) return;
+      await deleteDoc(doc(db,'users',currentUser.uid,'swl_folders',f.id));
+      await loadFolders();
+      showToast('🗑 Folder dipadam');
     });
+    list.appendChild(div);
+  });
+}
 
-    const doLogout = async () => {
-      try {
-        activeCreator = null;
-        teardownList();
-        await signOutGoogle();
-      } catch { alert('Logout gagal.'); }
-    };
-    btnLogout.addEventListener('click', doLogout);
-    btnLogoutCreator.addEventListener('click', doLogout);
+function openFolderPanel() {
+  document.getElementById('folder-panel').classList.add('show');
+}
+function closeFolderPanel() {
+  document.getElementById('folder-panel').classList.remove('show');
+  loadFolders();
+}
 
-    // ── PIN state ──
-    let setupPinStep  = 'create';
-    let setupPinFirst = '';
+// ════════════════════════════════════
+// VIDEOS
+// ════════════════════════════════════
+function colVideos() {
+  return collection(db, 'users', currentUser.uid, 'videos');
+}
 
-    // ── Extra elements ──
-    const pageSetupPin       = document.getElementById('page-setup-pin');
-    const loginPinSection    = document.getElementById('login-pin-section');
-    const loginGoogleSection = document.getElementById('login-google-section');
-    const pinError           = document.getElementById('pin-error');
-    const setupPinDesc       = document.getElementById('setup-pin-desc');
-    const setupPinError      = document.getElementById('setup-pin-error');
-    const btnUseGoogleInstead= document.getElementById('btn-use-google-instead');
-    const btnSkipPin         = document.getElementById('btn-skip-pin');
+function loadVideos() {
+  if (unsubVideos) { unsubVideos(); unsubVideos = null; }
+  unsubVideos = onSnapshot(
+    query(colVideos(), orderBy('createdAt','desc')),
+    snap => {
+      allVideos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderGallery();
+    }
+  );
+}
 
-    async function hashPin(pin) {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pin));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+function teardown() {
+  if (unsubVideos) { unsubVideos(); unsubVideos = null; }
+  allVideos = []; allFolders = [];
+}
+
+function renderGallery() {
+  const q = (document.getElementById('search').value || '').toLowerCase().trim();
+  let list = allVideos;
+
+  if (activeFolder === '__old__') {
+    list = list.filter(v => !v.folderId);
+  } else if (activeFolder !== 'all') {
+    list = list.filter(v => v.folderId === activeFolder);
+  }
+
+  if (q) list = list.filter(v => (v.title||'').toLowerCase().includes(q));
+
+  const gallery = document.getElementById('gallery');
+  gallery.innerHTML = '';
+
+  if (!list.length) {
+    gallery.innerHTML = '<div class="empty-state">Tiada video ditemui.</div>';
+    return;
+  }
+
+  list.forEach(item => {
+    const folderName = allFolders.find(f => f.id === item.folderId)?.name || '';
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.innerHTML = `
+      <div class="card-title">${escHtml(item.title || 'Video')}</div>
+      <div class="card-meta">
+        <span>${(item.ext||'').toUpperCase()}</span>
+        <span>${item.sizeBytes ? (item.sizeBytes/1024/1024).toFixed(1)+' MB' : ''}</span>
+        ${folderName ? '<span>🗂 '+escHtml(folderName)+'</span>' : '<span style="color:var(--amber)">📼 Tiada Folder</span>'}
+      </div>
+      <div class="card-actions">
+        <button class="btn primary sm" data-id="${item.id}" data-action="play">▶ Main</button>
+        <button class="btn sm" data-id="${item.id}" data-action="rename">✎ Edit</button>
+        <button class="btn sm" data-id="${item.id}" data-action="move">📁 Pindah</button>
+        <button class="btn sm danger" data-id="${item.id}" data-action="delete">🗑</button>
+      </div>
+    `;
+    gallery.appendChild(card);
+  });
+
+  gallery.addEventListener('click', handleCardClick);
+}
+
+async function handleCardClick(e) {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  const action = btn.dataset.action;
+  if (!id || !action) return;
+  const item = allVideos.find(v => v.id === id);
+  if (!item) return;
+
+  if (action === 'play') openPlayer(item);
+
+  if (action === 'rename') {
+    const name = prompt('Nama baharu:', item.title);
+    if (name?.trim() && name.trim() !== item.title) {
+      await updateDoc(doc(db,'users',currentUser.uid,'videos',id), { title: name.trim() });
+      showToast('✅ Nama dikemas kini','ok');
+    }
+  }
+
+  if (action === 'move') openMoveModal(item);
+
+  if (action === 'delete') {
+    if (!confirm('Padam "' + item.title + '"?')) return;
+    try {
+      await deleteObject(ref(stor, 'users/'+currentUser.uid+'/videos/'+id+'.'+item.ext));
+    } catch(e) {}
+    await deleteDoc(doc(db,'users',currentUser.uid,'videos',id));
+    showToast('🗑 Video dipadam');
+  }
+}
+
+document.getElementById('search').addEventListener('input', renderGallery);
+
+// ════════════════════════════════════
+// PLAYER
+// ════════════════════════════════════
+async function openPlayer(item) {
+  document.getElementById('player-title').textContent = item.title + ' ⏳';
+  player.preload = 'metadata';
+  player.src = '';
+  player.load();
+
+  let src = playerCache.get(item.id);
+  if (!src) { src = item.url + '#t=0.001'; playerCache.set(item.id, src); }
+  player.src = src;
+
+  player.oncanplay = () => {
+    document.getElementById('player-title').textContent = item.title;
+    player.play().catch(()=>{});
+    player.oncanplay = null;
+    setMediaSession(item);
+  };
+  player.onerror = () => {
+    document.getElementById('player-title').textContent = item.title + ' ❌';
+  };
+
+  document.getElementById('player-modal').style.display = 'grid';
+}
+
+function closePlayer(e) {
+  if (e && e.target !== document.getElementById('player-modal')) return;
+  player.pause();
+  player.oncanplay = null;
+  player.src = '';
+  player.load();
+  document.getElementById('player-modal').style.display = 'none';
+  if (document.pictureInPictureElement) document.exitPictureInPicture().catch(()=>{});
+  if (navigator.mediaSession) navigator.mediaSession.metadata = null;
+}
+
+async function togglePip() {
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+      document.getElementById('btn-pip').textContent = '⧉ Mini';
+    } else {
+      await player.requestPictureInPicture();
+      document.getElementById('btn-pip').textContent = '✕ Keluar Mini';
+    }
+  } catch { showToast('Browser tidak sokong Mini Player','err'); }
+}
+
+player.onleavepictureinpicture = () => {
+  document.getElementById('btn-pip').textContent = '⧉ Mini';
+};
+
+function setMediaSession(item) {
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: item.title,
+    artist: 'StudyWithLive',
+    album: (item.ext||'').toUpperCase()
+  });
+  navigator.mediaSession.setActionHandler('play', () => player.play());
+  navigator.mediaSession.setActionHandler('pause', () => player.pause());
+  navigator.mediaSession.setActionHandler('seekbackward', () => player.currentTime -= 10);
+  navigator.mediaSession.setActionHandler('seekforward', () => player.currentTime += 10);
+  navigator.mediaSession.setActionHandler('stop', () => {
+    player.pause();
+    document.getElementById('player-modal').style.display = 'none';
+    navigator.mediaSession.metadata = null;
+  });
+}
+
+// ════════════════════════════════════
+// MOVE
+// ════════════════════════════════════
+function openMoveModal(item) {
+  moveTarget = item;
+  const list = document.getElementById('move-list');
+  list.innerHTML = '';
+
+  const none = document.createElement('div');
+  none.className = 'folder-choice';
+  none.textContent = '📂 Tiada Folder (Video Lama)';
+  none.onclick = () => moveVideo(null);
+  list.appendChild(none);
+
+  allFolders.forEach(f => {
+    if (f.id === item.folderId) return;
+    const div = document.createElement('div');
+    div.className = 'folder-choice';
+    div.textContent = '🗂 ' + f.name;
+    div.onclick = () => moveVideo(f.id);
+    list.appendChild(div);
+  });
+
+  if (!allFolders.length) {
+    list.innerHTML += '<div style="color:var(--subtext);font-size:13px;padding:8px">Tiada folder lain. Buat folder dulu.</div>';
+  }
+
+  document.getElementById('move-modal').style.display = 'grid';
+}
+
+async function moveVideo(folderId) {
+  document.getElementById('move-modal').style.display = 'none';
+  if (!moveTarget) return;
+  await updateDoc(doc(db,'users',currentUser.uid,'videos',moveTarget.id), { folderId: folderId || null });
+  showToast('✅ Video dipindah','ok');
+  moveTarget = null;
+}
+
+function closeMoveModal(e) {
+  if (e && e.target !== document.getElementById('move-modal')) return;
+  document.getElementById('move-modal').style.display = 'none';
+}
+
+// ════════════════════════════════════
+// UPLOAD
+// ════════════════════════════════════
+function handleFileSelect(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  tempFile = file;
+  tempExt = (file.name.split('.').pop() || 'mp4').toLowerCase();
+
+  document.getElementById('convert-group').style.display = file.type.includes('audio') ? 'none' : 'flex';
+  document.getElementById('preview-video').src = URL.createObjectURL(file);
+  document.getElementById('preview-title').value = file.name.replace(/\.[^/.]+$/, '');
+  document.getElementById('upload-preview').style.display = 'block';
+  renderFolderSelect();
+  e.target.value = '';
+}
+
+function cancelUpload() {
+  document.getElementById('upload-preview').style.display = 'none';
+  document.getElementById('preview-video').src = '';
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-label').textContent = '';
+  document.getElementById('process-note').style.display = 'none';
+  document.getElementById('check-convert').checked = false;
+  tempFile = null;
+}
+
+async function doUpload() {
+  if (!currentUser || !tempFile) return;
+  const id = crypto.randomUUID();
+  const uid = currentUser.uid;
+  let fileToUpload = tempFile;
+  let finalExt = tempExt;
+  let title = (document.getElementById('preview-title').value || 'Video').trim();
+  const folderId = document.getElementById('preview-folder').value || null;
+
+  const btnSave = document.querySelector('#upload-preview .btn.primary');
+  btnSave.disabled = true;
+  document.getElementById('progress-wrap').style.display = 'block';
+  document.getElementById('progress-label').textContent = 'Sedia...';
+
+  try {
+    if (document.getElementById('check-convert').checked && tempFile.type.includes('video')) {
+      document.getElementById('process-note').style.display = 'block';
+      document.getElementById('progress-label').textContent = 'Merakam audio...';
+      fileToUpload = await extractAudio(tempFile, document.getElementById('preview-video'));
+      document.getElementById('process-note').style.display = 'none';
+      finalExt = 'mp3';
+      title += ' (Audio)';
     }
 
-    async function getSavedPinHash() {
-      if (!currentUser) return null;
-      try {
-        const d = await getDoc(doc(db, 'users', currentUser.uid, 'settings', 'pin'));
-        return d.exists() ? d.data().hash : null;
-      } catch { return null; }
-    }
+    const storageRef = ref(stor, 'users/'+uid+'/videos/'+id+'.'+finalExt);
+    const task = uploadBytesResumable(storageRef, fileToUpload);
 
-    async function savePinHash(hash) {
-      await setDoc(doc(db, 'users', currentUser.uid, 'settings', 'pin'), { hash });
-    }
-
-    // ── Login PIN ──
-    async function doLoginPin() {
-      const pinInput = document.getElementById('pin-input');
-      const pin = pinInput.value.trim();
-      if (!pin) { pinError.classList.remove('hidden'); pinError.textContent = 'Sila masukkan PIN.'; return; }
-      pinError.classList.add('hidden');
-      const entered = await hashPin(pin);
-      const saved = await getSavedPinHash();
-      if (entered === saved) {
-        pinInput.value = '';
-        showPage('creator');
-        await loadCreators();
-      } else {
-        pinError.classList.remove('hidden');
-        pinError.textContent = 'PIN salah. Cuba lagi.';
-        pinInput.value = '';
-        pinInput.focus();
-      }
-    }
-
-    document.getElementById('btn-pin-submit').addEventListener('click', doLoginPin);
-    document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLoginPin(); });
-
-    btnUseGoogleInstead.addEventListener('click', () => {
-      loginPinSection.classList.add('hidden');
-      loginGoogleSection.classList.remove('hidden');
-    });
-
-    // ── Setup PIN ──
-    async function doSetupPin() {
-      const setupInput = document.getElementById('setup-pin-input');
-      const pin = setupInput.value.trim();
-      if (!pin || pin.length < 4) {
-        setupPinError.classList.remove('hidden');
-        setupPinError.textContent = 'PIN mesti sekurang-kurangnya 4 digit.';
-        return;
-      }
-      setupPinError.classList.add('hidden');
-      if (setupPinStep === 'create') {
-        setupPinFirst = pin;
-        setupPinStep = 'confirm';
-        setupPinDesc.textContent = 'Masukkan PIN sekali lagi untuk sahkan.';
-        setupInput.value = '';
-        setupInput.focus();
-        document.getElementById('btn-setup-pin-submit').textContent = 'Sahkan PIN';
-      } else {
-        if (pin === setupPinFirst) {
-          const hash = await hashPin(pin);
-          await savePinHash(hash);
-          setupPinFirst = ''; setupPinStep = 'create';
-          setupInput.value = '';
-          document.getElementById('btn-setup-pin-submit').textContent = 'Seterusnya';
-          showPage('creator');
-          await loadCreators();
-        } else {
-          setupPinError.classList.remove('hidden');
-          setupPinError.textContent = 'PIN tidak sepadan. Cuba lagi.';
-          setupPinFirst = ''; setupPinStep = 'create';
-          setupPinDesc.textContent = 'Cipta PIN untuk login pantas.';
-          setupInput.value = '';
-          document.getElementById('btn-setup-pin-submit').textContent = 'Seterusnya';
-          setupInput.focus();
-        }
-      }
-    }
-
-    document.getElementById('btn-setup-pin-submit').addEventListener('click', doSetupPin);
-    document.getElementById('setup-pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSetupPin(); });
-
-    btnSkipPin.addEventListener('click', () => {
-      showPage('creator');
-      loadCreators();
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const savedHash = await getSavedPinHash();
-        if (savedHash) {
-          // Ada PIN — tunjuk skrin PIN
-          document.getElementById('pin-input').value = '';
-          loginPinSection.classList.remove('hidden');
-          loginGoogleSection.classList.add('hidden');
-          showPage('login');
-        } else {
-          // Tiada PIN — tunjuk setup PIN
-          setupPinStep = 'create'; setupPinFirst = '';
-          setupPinDesc.textContent = 'Cipta PIN untuk login pantas.';
-          document.getElementById('setup-pin-input').value = '';
-          document.getElementById('btn-setup-pin-submit').textContent = 'Seterusnya';
-          showPage('setup-pin');
-        }
-      } else {
-        currentUser = null;
-        activeCreator = null;
-        loginPinSection.classList.add('hidden');
-        loginGoogleSection.classList.remove('hidden');
-        showPage('login');
-        teardownList();
-      }
-    });
-
-    function showPage(name) {
-      pageLogin.classList.add('hidden');
-      pageSetupPin.classList.add('hidden');
-      pageCreator.classList.add('hidden');
-      pageHome.classList.add('hidden');
-      if (name === 'login')     pageLogin.classList.remove('hidden');
-      if (name === 'setup-pin') pageSetupPin.classList.remove('hidden');
-      if (name === 'creator')   pageCreator.classList.remove('hidden');
-      if (name === 'home')      pageHome.classList.remove('hidden');
-    }
-
-    // ══════════════════════════════════════
-    //  CREATORS
-    // ══════════════════════════════════════
-    async function loadCreators() {
-      if (!currentUser) return;
-      const snap = await getDocs(collection(db, 'users', currentUser.uid, 'creators'));
-      creators = [];
-      snap.forEach(d => creators.push({ id: d.id, ...d.data() }));
-
-      // Semak dulu sama ada ada video lama (tiada creatorId)
-      const videoSnap = await getDocs(collection(db, 'users', currentUser.uid, 'videos'));
-      const hasOldVideos = videoSnap.docs.some(d => !d.data().creatorId);
-
-      // Tunjuk channel khas hanya kalau ada video lama
-      if (hasOldVideos) {
-        creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
-      }
-      renderCreators();
-    }
-
-    function renderCreators() {
-      creatorList.innerHTML = '';
-      if (!creators.length) {
-        creatorList.innerHTML = '<p style="color:var(--subtext);font-size:14px">Tiada channel lagi. Tambah satu di bawah.</p>';
-        return;
-      }
-      creators.forEach(c => {
-        const div = document.createElement('div');
-        div.className = 'creator-item' + (activeCreator?.id === c.id ? ' active' : '');
-        div.innerHTML = `
-          <div style="flex:1;cursor:pointer" data-select="${c.id}">
-            <div class="creator-name">${escapeHtml(c.name)}</div>
-          </div>
-          <div class="creator-actions">
-            <button class="btn-ghost" style="padding:6px 10px;font-size:12px" data-edit="${c.id}">✎</button>
-            <button class="btn-danger" style="padding:6px 10px;font-size:12px" data-del="${c.id}">✕</button>
-          </div>`;
-        creatorList.appendChild(div);
-      });
-    }
-
-    creatorList.addEventListener('click', async (e) => {
-      const selId  = e.target.closest('[data-select]')?.dataset.select;
-      const editId = e.target.closest('[data-edit]')?.dataset.edit;
-      const delId  = e.target.closest('[data-del]')?.dataset.del;
-
-      if (selId) {
-        activeCreator = creators.find(c => c.id === selId);
-        enterHome();
-      }
-
-      if (editId) {
-        if (editId === '__uncategorized__') return; // tak boleh edit channel khas
-        const c = creators.find(x => x.id === editId);
-        const newName = prompt('Nama baru channel:', c.name);
-        if (newName && newName.trim() && newName.trim() !== c.name) {
-          await updateDoc(doc(db, 'users', currentUser.uid, 'creators', editId), { name: newName.trim() });
-          c.name = newName.trim();
-          renderCreators();
-        }
-      }
-
-      if (delId) {
-        if (delId === '__uncategorized__') return; // tak boleh padam channel khas
-        if (!confirm('Padam channel ini? Video dalam channel tidak akan dipadam.')) return;
-        await deleteDoc(doc(db, 'users', currentUser.uid, 'creators', delId));
-        creators = creators.filter(c => c.id !== delId);
-        renderCreators();
-      }
-    });
-
-    btnAddCreator.addEventListener('click', async () => {
-      const name = newCreatorInput.value.trim();
-      if (!name) { newCreatorInput.focus(); return; }
-      const user = currentUser || auth.currentUser;
-      if (!user) { alert('Sesi tamat. Sila login semula.'); return; }
-      if (user !== currentUser) currentUser = user;
-      try {
-        const id = crypto.randomUUID();
-        await setDoc(doc(db, 'users', user.uid, 'creators', id), { name, createdAt: Date.now() });
-        creators.push({ id, name });
-        newCreatorInput.value = '';
-        renderCreators();
-      } catch (err) {
-        alert('Gagal tambah channel: ' + err.message);
-      }
-    });
-
-    newCreatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnAddCreator.click(); });
-
-    btnBackCreator.addEventListener('click', () => {
-      teardownList();
-      activeCreator = null;
-      showPage('creator');
-    });
-
-    // ══════════════════════════════════════
-    //  ENTER HOME
-    // ══════════════════════════════════════
-    function enterHome() {
-      activeCreatorLabel.textContent = '📁 ' + activeCreator.name;
-      activeFolder = 'all';
-      showPage('home');
-      loadFolders();
-      loadList();
-    }
-
-    // ══════════════════════════════════════
-    //  FOLDERS
-    // ══════════════════════════════════════
-    async function loadFolders() {
-      if (!currentUser || !activeCreator) return;
-      const snap = await getDocs(collection(db, 'users', currentUser.uid, 'creators', activeCreator.id, 'folders'));
-      folders = [];
-      snap.forEach(d => folders.push({ id: d.id, ...d.data() }));
-      renderFolderBar();
-      renderFolderSelect();
-    }
-
-    function renderFolderBar() {
-      folderBar.innerHTML = '';
-
-      const allTab = document.createElement('button');
-      allTab.className = 'folder-tab' + (activeFolder === 'all' ? ' active' : '');
-      allTab.textContent = '📂 Semua';
-      allTab.onclick = () => { activeFolder = 'all'; renderFolderBar(); renderList(); };
-      folderBar.appendChild(allTab);
-
-      folders.forEach(f => {
-        const tab = document.createElement('button');
-        tab.className = 'folder-tab' + (activeFolder === f.id ? ' active' : '');
-        tab.textContent = '🗂 ' + f.name;
-        tab.onclick = () => { activeFolder = f.id; renderFolderBar(); renderList(); };
-        folderBar.appendChild(tab);
-      });
-
-      const addBtn = document.createElement('button');
-      addBtn.className = 'btn-new-folder';
-      addBtn.textContent = '+ Folder';
-      addBtn.onclick = async () => {
-        const name = prompt('Nama folder baru:');
-        if (!name?.trim()) return;
-        const id = crypto.randomUUID();
-        await setDoc(
-          doc(db, 'users', currentUser.uid, 'creators', activeCreator.id, 'folders', id),
-          { name: name.trim(), createdAt: Date.now() }
-        );
-        folders.push({ id, name: name.trim() });
-        renderFolderBar();
-        renderFolderSelect();
-      };
-      folderBar.appendChild(addBtn);
-    }
-
-    function renderFolderSelect() {
-      previewFolder.innerHTML = '<option value="">— Tiada Folder —</option>';
-      folders.forEach(f => {
-        const opt = document.createElement('option');
-        opt.value = f.id;
-        opt.textContent = f.name;
-        previewFolder.appendChild(opt);
-      });
-    }
-
-    // ══════════════════════════════════════
-    //  VIDEO LIST
-    // ══════════════════════════════════════
-    function loadList() {
-      if (!currentUser || !activeCreator) return;
-      unsubscribe = subscribeVideos(currentUser.uid, (snap) => {
-        videos = [];
-        snap.forEach(d => {
-          const data = d.data();
-          if (activeCreator.id === '__uncategorized__') {
-            // Video lama — tiada creatorId, atau creatorId null/undefined
-            if (!data.creatorId) videos.push(data);
-          } else {
-            if (data.creatorId === activeCreator.id) videos.push(data);
-          }
+    task.on('state_changed',
+      snap => {
+        const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
+        document.getElementById('progress-bar').style.width = pct + '%';
+        document.getElementById('progress-label').textContent = 'Upload: ' + pct + '%';
+      },
+      err => { throw err; },
+      async () => {
+        const url = await getDownloadURL(storageRef);
+        await setDoc(doc(db,'users',uid,'videos',id), {
+          id, title, url, ext: finalExt,
+          sizeBytes: fileToUpload.size,
+          createdAt: Date.now(),
+          folderId: folderId
         });
-        renderList();
-      });
-    }
-
-    function teardownList() {
-      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-      videos = [];
-      if (gallery) gallery.innerHTML = '';
-    }
-
-    function renderList() {
-      const q = (searchInput.value || '').toLowerCase().trim();
-      let filtered = videos;
-
-      // Tapis folder
-      if (activeFolder !== 'all') {
-        filtered = filtered.filter(v => v.folderId === activeFolder);
+        showToast('✅ Video berjaya disimpan!','ok');
+        cancelUpload();
       }
+    );
+  } catch(err) {
+    showToast('❌ Gagal: ' + err.message,'err');
+    btnSave.disabled = false;
+    document.getElementById('process-note').style.display = 'none';
+  }
+}
 
-      // Tapis search
-      if (q) filtered = filtered.filter(v => (v.title || '').toLowerCase().includes(q));
-
-      gallery.innerHTML = '';
-      if (!filtered.length) {
-        gallery.innerHTML = `<div class="card"><p class="card-sub">Tiada fail ditemui.</p></div>`;
-        return;
-      }
-
-      filtered.forEach(item => {
-        const folderName = folders.find(f => f.id === item.folderId)?.name || '';
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <h4 class="card-title">${escapeHtml(item.title || 'Rakaman')}</h4>
-          <p class="card-sub">
-            ${item.ext.toUpperCase()} • ${(item.sizeBytes/1024/1024).toFixed(2)} MB
-            ${folderName ? ' • 🗂 ' + escapeHtml(folderName) : ''}
-          </p>
-          <div class="card-actions">
-            <button class="btn-primary" data-id="${item.id}" data-action="play">Main</button>
-            <button class="btn-ghost" data-id="${item.id}" data-action="rename">Edit</button>
-            <button class="btn-ghost" data-id="${item.id}" data-action="move">Pindah</button>
-            <button class="btn-ghost" data-id="${item.id}" data-action="delete">Padam</button>
-          </div>`;
-        gallery.appendChild(card);
-      });
-    }
-
-    gallery.addEventListener('click', async (e) => {
-      const btn = e.target.closest('button');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const action = btn.dataset.action;
-      const item = videos.find(v => v.id === id);
-      if (!item) return;
-
-      if (action === 'play') openPlayer(item);
-
-      if (action === 'rename') {
-        const newTitle = prompt('Nama baharu:', item.title);
-        if (newTitle && newTitle.trim() && newTitle.trim() !== item.title) {
-          await updateDoc(userVideoDoc(currentUser.uid, id), { title: newTitle.trim() });
-        }
-      }
-
-      if (action === 'move') {
-        moveTargetItem = item;
-        openMoveModal(item);
-      }
-
-      if (action === 'delete') {
-        if (!confirm('Padam fail ini?')) return;
-        await deleteObject(storageRefFor(currentUser.uid, id, item.ext));
-        await deleteDoc(userVideoDoc(currentUser.uid, id));
-      }
-    });
-
-    // ══════════════════════════════════════
-    //  MOVE MODAL
-    // ══════════════════════════════════════
-    function openMoveModal(item) {
-      moveFolderList.innerHTML = '';
-
-      // Pilihan: Tiada folder
-      const noneDiv = document.createElement('div');
-      noneDiv.className = 'folder-choice';
-      noneDiv.textContent = '📂 Tiada Folder';
-      noneDiv.onclick = () => moveVideo(item, null);
-      moveFolderList.appendChild(noneDiv);
-
-      folders.forEach(f => {
-        if (f.id === item.folderId) return; // skip folder semasa
-        const div = document.createElement('div');
-        div.className = 'folder-choice';
-        div.textContent = '🗂 ' + f.name;
-        div.onclick = () => moveVideo(item, f.id);
-        moveFolderList.appendChild(div);
-      });
-
-      if (!folders.length) {
-        moveFolderList.innerHTML = '<p style="color:var(--subtext);font-size:14px">Tiada folder lain. Buat folder baharu dari bar atas.</p>';
-      }
-
-      moveModal.classList.remove('hidden');
-    }
-
-    async function moveVideo(item, folderId) {
-      moveModal.classList.add('hidden');
-      await updateDoc(userVideoDoc(currentUser.uid, item.id), { folderId: folderId || null });
-    }
-
-    btnCloseMove.onclick = () => moveModal.classList.add('hidden');
-
-    // ══════════════════════════════════════
-    //  UPLOAD
-    // ══════════════════════════════════════
-    btnUpload.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files?.[0];
-      if (!file) return;
-      tempFile = file;
-      tempExt = (file.name.split('.').pop() || 'mp4').toLowerCase();
-      convertContainer.classList.toggle('hidden', file.type.includes('audio'));
-      previewVideo.src = URL.createObjectURL(file);
-      previewTitle.value = file.name.replace(/\.[^/.]+$/, '');
-      previewSection.classList.remove('hidden');
-      // Set folder dropdown to active folder
-      if (activeFolder !== 'all') previewFolder.value = activeFolder;
-      hideProgress();
-    });
-
-    btnSaveUpload.addEventListener('click', async () => {
-      if (!currentUser || !tempFile || !activeCreator) return;
-      const id = crypto.randomUUID();
-      const uid = currentUser.uid;
-      let fileToUpload = tempFile;
-      let finalExt = tempExt;
-      let title = (previewTitle.value || 'Fail baru').trim();
-      const folderId = previewFolder.value || null;
-
+function extractAudio(file, videoEl) {
+  return new Promise((resolve, reject) => {
+    videoEl.src = URL.createObjectURL(file);
+    videoEl.muted = true;
+    videoEl.onloadeddata = async () => {
       try {
-        btnSaveUpload.disabled = true;
-        showProgress();
-
-        if (checkConvert.checked && tempFile.type.includes('video')) {
-          uploadLabel.textContent = 'Sedia merakam audio...';
-          processNote.classList.remove('hidden');
-          fileToUpload = await extractAudioStreaming(tempFile, previewVideo);
-          processNote.classList.add('hidden');
-          finalExt = 'mp3';
-          title += ' (Audio)';
-          uploadLabel.textContent = 'Audio sedia! Memulakan muat naik...';
-        }
-
-        const storageRef = storageRefFor(uid, id, finalExt);
-        const task = uploadBytesResumable(storageRef, fileToUpload);
-
-        task.on('state_changed',
-          (snap) => {
-            const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-            uploadBar.style.width = pct + '%';
-            uploadLabel.textContent = 'Upload: ' + pct + '%';
-          },
-          (err) => { throw err; },
-          async () => {
-            const url = await getDownloadURL(storageRef);
-            await setDoc(userVideoDoc(uid, id), {
-              id, title, url, ext: finalExt,
-              sizeBytes: fileToUpload.size,
-              createdAt: Date.now(),
-              creatorId: activeCreator.id,
-              folderId: folderId
-            });
-            resetUploadPreview();
-          }
-        );
-      } catch (err) {
-        alert('Proses gagal. Sila cuba lagi.');
-        console.error(err);
-        btnSaveUpload.disabled = false;
-        processNote.classList.add('hidden');
-      }
-    });
-
-    function extractAudioStreaming(file, videoElement) {
-      return new Promise((resolve, reject) => {
-        const url = URL.createObjectURL(file);
-        videoElement.src = url;
-        videoElement.muted = true;
-        videoElement.onloadeddata = async () => {
-          try {
-            await videoElement.play();
-            const stream = videoElement.captureStream?.() || videoElement.mozCaptureStream?.();
-            const audioTracks = stream.getAudioTracks();
-            if (!audioTracks.length) { reject(new Error('Tiada trek audio.')); return; }
-            const audioStream = new MediaStream(audioTracks);
-            const mediaRecorder = new MediaRecorder(audioStream);
-            const chunks = [];
-            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-            mediaRecorder.onstop = () => {
-              const blob = new Blob(chunks, { type: 'audio/mp3' });
-              resolve(new File([blob], 'audio.mp3', { type: 'audio/mp3' }));
-            };
-            mediaRecorder.start();
-            const iv = setInterval(() => {
-              if (!videoElement.paused) {
-                const pct = Math.round((videoElement.currentTime / videoElement.duration) * 100);
-                uploadLabel.textContent = `Merakam: ${pct}%`;
-                uploadBar.style.width = pct + '%';
-              }
-            }, 1000);
-            videoElement.onended = () => { clearInterval(iv); mediaRecorder.stop(); };
-          } catch (err) { reject(err); }
-        };
-        videoElement.onerror = () => reject(new Error('Gagal memuatkan video.'));
-      });
-    }
-
-    // ══════════════════════════════════════
-    //  PLAYER
-    // ══════════════════════════════════════
-    async function openPlayer(item) {
-      playerModal.classList.remove('hidden');
-      playerTitle.textContent = item.title + '  ⏳';
-      player.preload = 'metadata';
-      player.src = '';
-      player.load();
-
-      let src = playerCache.get(item.id);
-      if (!src) { src = item.url + '#t=0.001'; playerCache.set(item.id, src); }
-
-      player.src = src;
-      player.oncanplay = () => {
-        playerTitle.textContent = item.title;
-        player.play().catch(() => {});
-        player.oncanplay = null;
-        setMediaSession(item);
-      };
-      player.onerror = () => { playerTitle.textContent = item.title + '  ❌ Gagal'; };
-    }
-
-    btnClosePlayer.onclick = () => {
-      player.pause();
-      player.oncanplay = null;
-      player.onerror = null;
-      player.src = '';
-      player.load();
-      playerModal.classList.add('hidden');
-      if (document.pictureInPictureElement) document.exitPictureInPicture().catch(() => {});
-      navigator.mediaSession.metadata = null;
+        await videoEl.play();
+        const stream = videoEl.captureStream?.() || videoEl.mozCaptureStream?.();
+        const tracks = stream.getAudioTracks();
+        if (!tracks.length) { reject(new Error('Tiada audio dalam video ini.')); return; }
+        const rec = new MediaRecorder(new MediaStream(tracks));
+        const chunks = [];
+        rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+        rec.onstop = () => resolve(new File([new Blob(chunks, {type:'audio/mp3'})], 'audio.mp3', {type:'audio/mp3'}));
+        rec.start();
+        const iv = setInterval(() => {
+          const pct = Math.round((videoEl.currentTime / videoEl.duration) * 100);
+          document.getElementById('progress-bar').style.width = pct + '%';
+          document.getElementById('progress-label').textContent = 'Merakam: ' + pct + '%';
+        }, 1000);
+        videoEl.onended = () => { clearInterval(iv); rec.stop(); };
+      } catch(err) { reject(err); }
     };
+    videoEl.onerror = () => reject(new Error('Gagal muatkan video.'));
+  });
+}
 
-    playbackRate.onchange = () => player.playbackRate = playbackRate.value;
-    btnSkipBack.onclick   = () => player.currentTime -= 10;
-    btnSkipForward.onclick= () => player.currentTime += 10;
+// ════════════════════════════════════
+// UTILS
+// ════════════════════════════════════
+let _toastTimer = null;
+function showToast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (type ? ' '+type : '');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.className = '', 3000);
+}
 
-    btnPip.onclick = async () => {
-      try {
-        if (document.pictureInPictureElement) {
-          await document.exitPictureInPicture();
-          btnPip.textContent = '⧉ Mini Player';
-        } else {
-          await player.requestPictureInPicture();
-          btnPip.textContent = '✕ Keluar Mini';
-        }
-      } catch { alert('Browser anda tidak sokong Mini Player.'); }
-    };
-    player.onleavepictureinpicture = () => { btnPip.textContent = '⧉ Mini Player'; };
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
 
-    function setMediaSession(item) {
-      if (!('mediaSession' in navigator)) return;
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: item.title, artist: activeCreator?.name || 'StressTogether',
-        album: item.ext.toUpperCase()
-      });
-      navigator.mediaSession.setActionHandler('play', () => player.play());
-      navigator.mediaSession.setActionHandler('pause', () => player.pause());
-      navigator.mediaSession.setActionHandler('seekbackward', () => player.currentTime -= 10);
-      navigator.mediaSession.setActionHandler('seekforward',  () => player.currentTime += 10);
-      navigator.mediaSession.setActionHandler('stop', () => {
-        player.pause();
-        playerModal.classList.add('hidden');
-        navigator.mediaSession.metadata = null;
-      });
-    }
-
-    searchInput.oninput   = () => renderList();
-    btnCancelUpload.onclick = resetUploadPreview;
-
-    function showProgress() { uploadProgress.classList.remove('hidden'); }
-    function hideProgress() { uploadProgress.classList.add('hidden'); uploadBar.style.width = '0%'; }
-    function resetUploadPreview() {
-      previewSection.classList.add('hidden');
-      previewVideo.src = '';
-      tempFile = null;
-      checkConvert.checked = false;
-      btnSaveUpload.disabled = false;
-      hideProgress();
-      processNote.classList.add('hidden');
-    }
-    function escapeHtml(s) {
-      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
-  </script>
+</script>
 </body>
 </html>
