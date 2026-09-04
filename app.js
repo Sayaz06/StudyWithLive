@@ -289,14 +289,42 @@ gallery.addEventListener('click', async (e) => {
   }
 });
 
-function openPlayer(item) {
+const playerCache = new Map();
+
+async function openPlayer(item) {
   playerModal.classList.remove('hidden');
-  playerTitle.textContent = item.title;
-  player.src = item.url;
-  player.play().catch(() => {});
+  playerTitle.textContent = item.title + '  ⏳';
+  player.preload = 'metadata';
+  player.src = '';
+  player.load();
+
+  let src = playerCache.get(item.id);
+  if (!src) {
+    src = item.url + '#t=0.001';
+    playerCache.set(item.id, src);
+  }
+
+  player.src = src;
+
+  player.oncanplay = () => {
+    playerTitle.textContent = item.title;
+    player.play().catch(() => {});
+    player.oncanplay = null;
+  };
+
+  player.onerror = () => {
+    playerTitle.textContent = item.title + '  ❌ Gagal';
+  };
 }
 
-btnClosePlayer.onclick = () => { player.pause(); player.src = ''; playerModal.classList.add('hidden'); };
+btnClosePlayer.onclick = () => {
+  player.pause();
+  player.oncanplay = null;
+  player.onerror = null;
+  player.src = '';
+  player.load();
+  playerModal.classList.add('hidden');
+};
 playbackRate.onchange = () => player.playbackRate = playbackRate.value;
 btnSkipBack.onclick = () => player.currentTime -= 10;
 btnSkipForward.onclick = () => player.currentTime += 10;
