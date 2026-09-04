@@ -122,29 +122,22 @@
     #player:not([src]), #player[src=""] { min-height: 40px; }
 
     /* ── PIN ── */
-    .pin-dots {
-      display: flex; justify-content: center; gap: 12px; margin: 16px auto;
+    .pin-field {
+      width: 100%; max-width: 320px; padding: 12px 16px;
+      background: #0b1220; border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 22px;
+      outline: none; margin-bottom: 12px; letter-spacing: 8px;
+      text-align: center;
     }
-    .pin-dots span {
-      width: 16px; height: 16px; border-radius: 50%;
-      border: 2px solid var(--border-2); background: transparent;
-      transition: background 0.15s;
+    .pin-field:focus { border-color: var(--indigo); }
+    .pin-btn {
+      width: 100%; max-width: 320px; padding: 13px;
+      border-radius: 10px; border: none;
+      background: linear-gradient(90deg, var(--indigo), var(--violet));
+      color: white; font-size: 15px; font-weight: 600;
+      cursor: pointer; margin-bottom: 10px; display: block;
     }
-    .pin-dots span.filled { background: var(--indigo); border-color: var(--indigo); }
-    .pin-dots span.error  { background: #ef4444; border-color: #ef4444; }
-    .pin-keypad {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 10px; max-width: 260px; margin: 16px auto 0;
-    }
-    .pin-key {
-      appearance: none; border: 1px solid var(--border-2);
-      background: #0b1220; color: var(--text);
-      border-radius: 12px; font-size: 20px; padding: 16px;
-      cursor: pointer; transition: background 0.1s;
-    }
-    .pin-key:active { background: var(--border); }
-    .pin-key-clear { color: #ef4444; border-color: #ef4444; }
-    .pin-key-del   { color: var(--subtext); }
+    .pin-btn:active { opacity: 0.85; }
     .pin-error {
       color: #ef4444; font-size: 13px; margin: 8px 0;
       min-height: 20px;
@@ -203,27 +196,11 @@
       <h1 class="app-title">StressTogether</h1>
       <p class="subtext">Simpan Video & MP3 — pendek hingga panjang.</p>
       <div id="login-pin-section" class="hidden">
-        <p style="color:var(--subtext);margin-bottom:16px">Masukkan PIN 6 digit</p>
-        <div class="pin-dots" id="pin-dots">
-          <span></span><span></span><span></span>
-          <span></span><span></span><span></span>
-        </div>
+        <p style="color:var(--subtext);margin-bottom:16px">Masukkan PIN</p>
+        <input class="pin-field" id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
         <div class="pin-error hidden" id="pin-error">PIN salah. Cuba lagi.</div>
-        <div class="pin-keypad" id="pin-keypad">
-          <button class="pin-key" data-val="1">1</button>
-          <button class="pin-key" data-val="2">2</button>
-          <button class="pin-key" data-val="3">3</button>
-          <button class="pin-key" data-val="4">4</button>
-          <button class="pin-key" data-val="5">5</button>
-          <button class="pin-key" data-val="6">6</button>
-          <button class="pin-key" data-val="7">7</button>
-          <button class="pin-key" data-val="8">8</button>
-          <button class="pin-key" data-val="9">9</button>
-          <button class="pin-key pin-key-clear" data-val="clear">✕</button>
-          <button class="pin-key" data-val="0">0</button>
-          <button class="pin-key pin-key-del" data-val="del">⌫</button>
-        </div>
-        <button id="btn-use-google-instead" class="btn-ghost" style="margin-top:16px;font-size:13px">Guna Google Login</button>
+        <button class="pin-btn" id="btn-pin-submit">Masuk dengan PIN</button>
+        <button id="btn-use-google-instead" class="btn-ghost" style="font-size:13px;width:100%;max-width:320px">Guna Google Login</button>
       </div>
       <div id="login-google-section">
         <button id="btn-google" class="btn-primary">Login dengan Google</button>
@@ -235,27 +212,11 @@
   <div id="page-setup-pin" class="page hidden">
     <div class="container" style="text-align:center">
       <h1 class="app-title">Tetapkan PIN</h1>
-      <p class="subtext" id="setup-pin-desc">Cipta PIN 6 digit untuk login pantas.</p>
-      <div class="pin-dots" id="setup-pin-dots">
-        <span></span><span></span><span></span>
-        <span></span><span></span><span></span>
-      </div>
+      <p class="subtext" id="setup-pin-desc">Cipta PIN untuk login pantas.</p>
+      <input class="pin-field" id="setup-pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
       <div class="pin-error hidden" id="setup-pin-error"></div>
-      <div class="pin-keypad">
-        <button class="pin-key" data-setup="1">1</button>
-        <button class="pin-key" data-setup="2">2</button>
-        <button class="pin-key" data-setup="3">3</button>
-        <button class="pin-key" data-setup="4">4</button>
-        <button class="pin-key" data-setup="5">5</button>
-        <button class="pin-key" data-setup="6">6</button>
-        <button class="pin-key" data-setup="7">7</button>
-        <button class="pin-key" data-setup="8">8</button>
-        <button class="pin-key" data-setup="9">9</button>
-        <button class="pin-key pin-key-clear" data-setup="clear">✕</button>
-        <button class="pin-key" data-setup="0">0</button>
-        <button class="pin-key pin-key-del" data-setup="del">⌫</button>
-      </div>
-      <button id="btn-skip-pin" class="btn-ghost" style="margin-top:16px;font-size:13px">Langkau — Guna Google Sahaja</button>
+      <button class="pin-btn" id="btn-setup-pin-submit">Seterusnya</button>
+      <button id="btn-skip-pin" class="btn-ghost" style="font-size:13px;width:100%;max-width:320px">Langkau — Guna Google Sahaja</button>
     </div>
   </div>
 
@@ -382,8 +343,6 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/vconsole/dist/vconsole.min.js"></script>
-  <script>new VConsole();</script>
   <script type="module" src="./firebase.js"></script>
   <script type="module">
     import {
@@ -479,18 +438,14 @@
     btnLogoutCreator.addEventListener('click', doLogout);
 
     // ── PIN state ──
-    let pinBuffer      = '';
-    let setupPinStep   = 'create'; // 'create' | 'confirm'
-    let setupPinFirst  = '';
-    const PIN_KEY      = 'st_pin_hash';
+    let setupPinStep  = 'create';
+    let setupPinFirst = '';
 
     // ── Extra elements ──
     const pageSetupPin       = document.getElementById('page-setup-pin');
     const loginPinSection    = document.getElementById('login-pin-section');
     const loginGoogleSection = document.getElementById('login-google-section');
-    const pinDots            = document.getElementById('pin-dots');
     const pinError           = document.getElementById('pin-error');
-    const setupPinDots       = document.getElementById('setup-pin-dots');
     const setupPinDesc       = document.getElementById('setup-pin-desc');
     const setupPinError      = document.getElementById('setup-pin-error');
     const btnUseGoogleInstead= document.getElementById('btn-use-google-instead');
@@ -513,84 +468,79 @@
       await setDoc(doc(db, 'users', currentUser.uid, 'settings', 'pin'), { hash });
     }
 
-    // ── PIN keypad — login screen ──
-    document.getElementById('pin-keypad').addEventListener('click', async (e) => {
-      const val = e.target.closest('.pin-key')?.dataset.val;
-      if (!val) return;
-      if (val === 'clear') { pinBuffer = ''; }
-      else if (val === 'del') { pinBuffer = pinBuffer.slice(0, -1); }
-      else if (pinBuffer.length < 6) { pinBuffer += val; }
-      updatePinDots(pinDots, pinBuffer);
+    // ── Login PIN ──
+    async function doLoginPin() {
+      const pinInput = document.getElementById('pin-input');
+      const pin = pinInput.value.trim();
+      if (!pin) { pinError.classList.remove('hidden'); pinError.textContent = 'Sila masukkan PIN.'; return; }
       pinError.classList.add('hidden');
-
-      if (pinBuffer.length === 6) {
-        const entered = await hashPin(pinBuffer);
-        const saved   = await getSavedPinHash();
-        pinBuffer = '';
-        updatePinDots(pinDots, '');
-        if (entered === saved) {
-          showPage('creator');
-          await loadCreators();
-        } else {
-          pinError.classList.remove('hidden');
-          pinDots.querySelectorAll('span').forEach(s => {
-            s.classList.add('error');
-            setTimeout(() => s.classList.remove('error', 'filled'), 600);
-          });
-        }
+      const entered = await hashPin(pin);
+      const saved = await getSavedPinHash();
+      if (entered === saved) {
+        pinInput.value = '';
+        showPage('creator');
+        await loadCreators();
+      } else {
+        pinError.classList.remove('hidden');
+        pinError.textContent = 'PIN salah. Cuba lagi.';
+        pinInput.value = '';
+        pinInput.focus();
       }
-    });
+    }
+
+    document.getElementById('btn-pin-submit').addEventListener('click', doLoginPin);
+    document.getElementById('pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') doLoginPin(); });
 
     btnUseGoogleInstead.addEventListener('click', () => {
       loginPinSection.classList.add('hidden');
       loginGoogleSection.classList.remove('hidden');
     });
 
-    // ── PIN keypad — setup screen ──
-    pageSetupPin.addEventListener('click', async (e) => {
-      const val = e.target.closest('[data-setup]')?.dataset.setup;
-      if (!val) return;
-      if (val === 'clear') { setupPinFirst = ''; pinBuffer = ''; setupPinStep = 'create'; setupPinDesc.textContent = 'Cipta PIN 6 digit untuk login pantas.'; }
-      else if (val === 'del') { pinBuffer = pinBuffer.slice(0, -1); }
-      else if (pinBuffer.length < 6) { pinBuffer += val; }
-      updatePinDots(setupPinDots, pinBuffer);
+    // ── Setup PIN ──
+    async function doSetupPin() {
+      const setupInput = document.getElementById('setup-pin-input');
+      const pin = setupInput.value.trim();
+      if (!pin || pin.length < 4) {
+        setupPinError.classList.remove('hidden');
+        setupPinError.textContent = 'PIN mesti sekurang-kurangnya 4 digit.';
+        return;
+      }
       setupPinError.classList.add('hidden');
-
-      if (pinBuffer.length === 6) {
-        if (setupPinStep === 'create') {
-          setupPinFirst = pinBuffer;
-          pinBuffer = '';
-          setupPinStep = 'confirm';
-          setupPinDesc.textContent = 'Masukkan PIN sekali lagi untuk sahkan.';
-          updatePinDots(setupPinDots, '');
+      if (setupPinStep === 'create') {
+        setupPinFirst = pin;
+        setupPinStep = 'confirm';
+        setupPinDesc.textContent = 'Masukkan PIN sekali lagi untuk sahkan.';
+        setupInput.value = '';
+        setupInput.focus();
+        document.getElementById('btn-setup-pin-submit').textContent = 'Sahkan PIN';
+      } else {
+        if (pin === setupPinFirst) {
+          const hash = await hashPin(pin);
+          await savePinHash(hash);
+          setupPinFirst = ''; setupPinStep = 'create';
+          setupInput.value = '';
+          document.getElementById('btn-setup-pin-submit').textContent = 'Seterusnya';
+          showPage('creator');
+          await loadCreators();
         } else {
-          if (pinBuffer === setupPinFirst) {
-            const hash = await hashPin(pinBuffer);
-            await savePinHash(hash);
-            pinBuffer = ''; setupPinFirst = ''; setupPinStep = 'create';
-            showPage('creator');
-            await loadCreators();
-          } else {
-            setupPinError.textContent = 'PIN tidak sepadan. Cuba lagi.';
-            setupPinError.classList.remove('hidden');
-            pinBuffer = ''; setupPinStep = 'create'; setupPinFirst = '';
-            setupPinDesc.textContent = 'Cipta PIN 6 digit untuk login pantas.';
-            updatePinDots(setupPinDots, '');
-          }
+          setupPinError.classList.remove('hidden');
+          setupPinError.textContent = 'PIN tidak sepadan. Cuba lagi.';
+          setupPinFirst = ''; setupPinStep = 'create';
+          setupPinDesc.textContent = 'Cipta PIN untuk login pantas.';
+          setupInput.value = '';
+          document.getElementById('btn-setup-pin-submit').textContent = 'Seterusnya';
+          setupInput.focus();
         }
       }
-    });
+    }
+
+    document.getElementById('btn-setup-pin-submit').addEventListener('click', doSetupPin);
+    document.getElementById('setup-pin-input').addEventListener('keydown', e => { if (e.key === 'Enter') doSetupPin(); });
 
     btnSkipPin.addEventListener('click', () => {
       showPage('creator');
       loadCreators();
     });
-
-    function updatePinDots(dotsEl, buf) {
-      dotsEl.querySelectorAll('span').forEach((s, i) => {
-        s.classList.toggle('filled', i < buf.length);
-      });
-    }
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -642,8 +592,14 @@
       creators = [];
       snap.forEach(d => creators.push({ id: d.id, ...d.data() }));
 
-      // Selalu tunjuk channel Video Lama — biar subscribeVideos yang tapis
-      creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
+      // Semak dulu sama ada ada video lama (tiada creatorId)
+      const videoSnap = await getDocs(collection(db, 'users', currentUser.uid, 'videos'));
+      const hasOldVideos = videoSnap.docs.some(d => !d.data().creatorId);
+
+      // Tunjuk channel khas hanya kalau ada video lama
+      if (hasOldVideos) {
+        creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
+      }
       renderCreators();
     }
 
@@ -700,19 +656,18 @@
 
     btnAddCreator.addEventListener('click', async () => {
       const name = newCreatorInput.value.trim();
-      console.log('Tambah ditekan:', name, 'user:', currentUser?.uid);
-      if (!name) return;
-      if (!currentUser) { alert('Sesi tamat. Sila login semula.'); return; }
+      if (!name) { newCreatorInput.focus(); return; }
+      const user = currentUser || auth.currentUser;
+      if (!user) { alert('Sesi tamat. Sila login semula.'); return; }
+      if (user !== currentUser) currentUser = user;
       try {
         const id = crypto.randomUUID();
-        await setDoc(doc(db, 'users', currentUser.uid, 'creators', id), { name, createdAt: Date.now() });
+        await setDoc(doc(db, 'users', user.uid, 'creators', id), { name, createdAt: Date.now() });
         creators.push({ id, name });
         newCreatorInput.value = '';
         renderCreators();
-        console.log('Creator berjaya ditambah:', name);
       } catch (err) {
-        console.error('Gagal tambah creator:', err);
-        alert('Gagal: ' + err.message);
+        alert('Gagal tambah channel: ' + err.message);
       }
     });
 
