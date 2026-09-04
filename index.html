@@ -547,24 +547,22 @@
         currentUser = user;
         const savedHash = await getSavedPinHash();
         if (savedHash) {
-          // Ada PIN — tunjuk skrin PIN terus
-          pinBuffer = '';
-          updatePinDots(pinDots, '');
+          // Ada PIN — tunjuk skrin PIN
+          document.getElementById('pin-input').value = '';
           loginPinSection.classList.remove('hidden');
           loginGoogleSection.classList.add('hidden');
           showPage('login');
         } else {
           // Tiada PIN — tunjuk setup PIN
-          pinBuffer = ''; setupPinStep = 'create'; setupPinFirst = '';
-          setupPinDesc.textContent = 'Cipta PIN 6 digit untuk login pantas.';
-          updatePinDots(setupPinDots, '');
+          setupPinStep = 'create'; setupPinFirst = '';
+          setupPinDesc.textContent = 'Cipta PIN untuk login pantas.';
+          document.getElementById('setup-pin-input').value = '';
+          document.getElementById('btn-setup-pin-submit').textContent = 'Seterusnya';
           showPage('setup-pin');
         }
       } else {
         currentUser = null;
         activeCreator = null;
-        pinBuffer = '';
-        // Semak sama ada ada PIN untuk tunjuk keypad atau Google button
         loginPinSection.classList.add('hidden');
         loginGoogleSection.classList.remove('hidden');
         showPage('login');
