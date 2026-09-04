@@ -700,12 +700,20 @@
 
     btnAddCreator.addEventListener('click', async () => {
       const name = newCreatorInput.value.trim();
+      console.log('Tambah ditekan:', name, 'user:', currentUser?.uid);
       if (!name) return;
-      const id = crypto.randomUUID();
-      await setDoc(doc(db, 'users', currentUser.uid, 'creators', id), { name, createdAt: Date.now() });
-      creators.push({ id, name });
-      newCreatorInput.value = '';
-      renderCreators();
+      if (!currentUser) { alert('Sesi tamat. Sila login semula.'); return; }
+      try {
+        const id = crypto.randomUUID();
+        await setDoc(doc(db, 'users', currentUser.uid, 'creators', id), { name, createdAt: Date.now() });
+        creators.push({ id, name });
+        newCreatorInput.value = '';
+        renderCreators();
+        console.log('Creator berjaya ditambah:', name);
+      } catch (err) {
+        console.error('Gagal tambah creator:', err);
+        alert('Gagal: ' + err.message);
+      }
     });
 
     newCreatorInput.addEventListener('keydown', e => { if (e.key === 'Enter') btnAddCreator.click(); });
