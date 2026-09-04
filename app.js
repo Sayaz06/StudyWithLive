@@ -353,6 +353,26 @@ function setMediaSession(item) {
 searchInput.oninput = () => renderList();
 btnCancelUpload.onclick = resetUploadPreview;
 
+// Picture-in-Picture
+const btnPip = document.getElementById('btn-pip');
+btnPip.onclick = async () => {
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+      btnPip.textContent = '⧉ Mini Player';
+    } else {
+      await player.requestPictureInPicture();
+      btnPip.textContent = '✕ Keluar Mini';
+    }
+  } catch (err) {
+    alert('Browser anda tidak sokong Mini Player.');
+  }
+};
+
+player.onleavepictureinpicture = () => {
+  btnPip.textContent = '⧉ Mini Player';
+};
+
 function showProgress() { uploadProgress.classList.remove('hidden'); }
 function hideProgress() { uploadProgress.classList.add('hidden'); uploadBar.style.width = '0%'; }
 function resetUploadPreview() {
