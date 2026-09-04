@@ -640,8 +640,15 @@
       const snap = await getDocs(collection(db, 'users', currentUser.uid, 'creators'));
       creators = [];
       snap.forEach(d => creators.push({ id: d.id, ...d.data() }));
-      // Tambah channel khas untuk video lama tanpa creator
-      creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
+
+      // Semak dulu sama ada ada video lama (tiada creatorId)
+      const videoSnap = await getDocs(collection(db, 'users', currentUser.uid, 'videos'));
+      const hasOldVideos = videoSnap.docs.some(d => !d.data().creatorId);
+
+      // Tunjuk channel khas hanya kalau ada video lama
+      if (hasOldVideos) {
+        creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
+      }
       renderCreators();
     }
 
@@ -792,10 +799,9 @@
         snap.forEach(d => {
           const data = d.data();
           if (activeCreator.id === '__uncategorized__') {
-            // Channel khas: tunjuk video yang tiada creatorId sahaja
+            // Video lama — tiada creatorId, atau creatorId null/undefined
             if (!data.creatorId) videos.push(data);
           } else {
-            // Channel biasa: tunjuk video yang creatorId sepadan
             if (data.creatorId === activeCreator.id) videos.push(data);
           }
         });
