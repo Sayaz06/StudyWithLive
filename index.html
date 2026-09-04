@@ -643,14 +643,8 @@
       creators = [];
       snap.forEach(d => creators.push({ id: d.id, ...d.data() }));
 
-      // Semak dulu sama ada ada video lama (tiada creatorId)
-      const videoSnap = await getDocs(collection(db, 'users', currentUser.uid, 'videos'));
-      const hasOldVideos = videoSnap.docs.some(d => !d.data().creatorId);
-
-      // Tunjuk channel khas hanya kalau ada video lama
-      if (hasOldVideos) {
-        creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
-      }
+      // Selalu tunjuk channel Video Lama — biar subscribeVideos yang tapis
+      creators.unshift({ id: '__uncategorized__', name: '📼 Video Lama (Tiada Channel)' });
       renderCreators();
     }
 
