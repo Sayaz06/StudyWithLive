@@ -310,6 +310,7 @@ async function openPlayer(item) {
     playerTitle.textContent = item.title;
     player.play().catch(() => {});
     player.oncanplay = null;
+    setMediaSession(item);
   };
 
   player.onerror = () => {
@@ -324,10 +325,31 @@ btnClosePlayer.onclick = () => {
   player.src = '';
   player.load();
   playerModal.classList.add('hidden');
+  if (document.pictureInPictureElement) document.exitPictureInPicture().catch(() => {});
+  navigator.mediaSession.metadata = null;
 };
 playbackRate.onchange = () => player.playbackRate = playbackRate.value;
 btnSkipBack.onclick = () => player.currentTime -= 10;
 btnSkipForward.onclick = () => player.currentTime += 10;
+
+// Media Session — background audio + lock screen controls
+function setMediaSession(item) {
+  if (!('mediaSession' in navigator)) return;
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: item.title,
+    artist: 'StressTogether',
+    album: item.ext.toUpperCase()
+  });
+  navigator.mediaSession.setActionHandler('play', () => player.play());
+  navigator.mediaSession.setActionHandler('pause', () => player.pause());
+  navigator.mediaSession.setActionHandler('seekbackward', () => player.currentTime -= 10);
+  navigator.mediaSession.setActionHandler('seekforward', () => player.currentTime += 10);
+  navigator.mediaSession.setActionHandler('stop', () => {
+    player.pause();
+    playerModal.classList.add('hidden');
+    navigator.mediaSession.metadata = null;
+  });
+}
 searchInput.oninput = () => renderList();
 btnCancelUpload.onclick = resetUploadPreview;
 
