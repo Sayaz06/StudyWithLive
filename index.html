@@ -489,33 +489,44 @@ async function uploadToBunny(file, onProgress) {
 // ════════════════════════════════════
 async function migrateVideoToBunny(item) {
   if (!bunnyConfig) { showToast('Setup Bunny dulu (🐰 Bunny)','warn'); openBunnySetup(); return; }
-  if (!confirm('Tukar "' + item.title + '" ke Bunny Stream?\nVideo asal dalam Firebase akan dikekalkan sehingga proses selesai.')) return;
+  if (!confirm('Tukar "' + item.title + '" ke Bunny Stream?\nBunny akan fetch video terus dari Firebase.')) return;
 
-  showToast('⏳ Memuat turun dari Firebase...','warn');
+  showToast('⏳ Mencipta video dalam Bunny...','warn');
 
   try {
-    // Download dari Firebase
-    const response = await fetch(item.url);
-    if (!response.ok) throw new Error('Gagal muat turun dari Firebase');
-    const blob = await response.blob();
-    const file = new File([blob], item.title + '.' + item.ext, { type: blob.type });
+    const { libraryId, apiKey, pullZone } = bunnyConfig;
 
-    showToast('⏳ Menghantar ke Bunny...','warn');
-
-    const { guid, hlsUrl, thumbnailUrl } = await uploadToBunny(file, pct => {
-      showToast('⏳ Hantar ke Bunny: ' + pct + '%','warn');
+    // 1. Cipta video kosong dalam Bunny
+    const createRes = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos`, {
+      method: 'POST',
+      headers: { 'AccessKey': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: item.title })
     });
+    if (!createRes.ok) throw new Error('Gagal cipta video: ' + createRes.status);
+    const { guid } = await createRes.json();
 
-    // Kemas kini Firestore — tukar ke Bunny
+    showToast('⏳ Bunny sedang fetch video...','warn');
+
+    // 2. Suruh Bunny fetch terus dari Firebase URL (server-to-server, tiada CORS)
+    const fetchRes = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos/${guid}/fetch`, {
+      method: 'POST',
+      headers: { 'AccessKey': apiKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: item.url })
+    });
+    if (!fetchRes.ok) throw new Error('Bunny gagal fetch video: ' + fetchRes.status);
+
+    // 3. Bina URL HLS
+    const hlsUrl = `https://${pullZone}.b-cdn.net/${guid}/playlist.m3u8`;
+    const thumbnailUrl = `https://${pullZone}.b-cdn.net/${guid}/thumbnail.jpg`;
+
+    // 4. Kemas kini Firestore
     await updateDoc(doc(db,'users',currentUser.uid,'videos',item.id), {
-      bunnyGuid: guid,
-      hlsUrl,
-      thumbnailUrl,
-      source: 'bunny',
-      firebaseUrl: item.url // simpan url lama sebagai backup
+      bunnyGuid: guid, hlsUrl, thumbnailUrl,
+      source: 'bunny', firebaseUrl: item.url,
+      url: hlsUrl
     });
 
-    showToast('✅ Berjaya dipindahkan ke Bunny!','ok');
+    showToast('✅ Bunny sedang proses video — sedia dalam beberapa minit!','ok');
   } catch(e) {
     showToast('❌ Gagal: ' + e.message,'err');
   }
