@@ -9,47 +9,30 @@
 <meta name="apple-mobile-web-app-title" content="StudyWithLive">
 <link rel="manifest" href="manifest.json">
 <title>StudyWithLive</title>
+<!-- HLS player untuk Bunny Stream -->
+<link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
+<script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0a0a14;
-  --surface:#12121f;
-  --card:#1a1a2e;
-  --border:rgba(255,255,255,0.08);
-  --border-mid:rgba(255,255,255,0.15);
-  --text:#e8eaf6;
-  --subtext:#7986cb;
-  --grad1:#7c4dff;
-  --grad2:#448aff;
-  --danger:#ff5252;
-  --green:#00e676;
-  --amber:#ffab40;
+  --bg:#0a0a14;--surface:#12121f;--card:#1a1a2e;
+  --border:rgba(255,255,255,0.08);--border-mid:rgba(255,255,255,0.15);
+  --text:#e8eaf6;--subtext:#7986cb;
+  --grad1:#7c4dff;--grad2:#448aff;
+  --danger:#ff5252;--green:#00e676;--amber:#ffab40;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;overflow:hidden}
 
-/* ── LOGIN ── */
-#section-login{
-  position:fixed;inset:0;z-index:200;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:32px;background:var(--bg);
-}
+/* LOGIN */
+#section-login{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:var(--bg)}
 #section-login.hide{display:none}
 .login-logo{font-size:52px;margin-bottom:8px}
 .login-title{font-size:26px;font-weight:700;background:linear-gradient(135deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
 .login-sub{font-size:13px;color:var(--subtext);margin-bottom:32px;text-align:center}
-.login-field{
-  width:100%;max-width:320px;padding:13px 16px;
-  background:var(--card);border:1px solid var(--border-mid);
-  border-radius:12px;color:var(--text);font-size:14px;outline:none;
-  margin-bottom:10px;letter-spacing:0;
-}
+.login-field{width:100%;max-width:320px;padding:13px 16px;background:var(--card);border:1px solid var(--border-mid);border-radius:12px;color:var(--text);font-size:14px;outline:none;margin-bottom:10px}
 .login-field:focus{border-color:var(--grad1)}
 .login-field.pin-field{letter-spacing:6px;text-align:center;font-size:20px}
-.login-btn{
-  width:100%;max-width:320px;padding:14px;border-radius:12px;border:none;
-  background:linear-gradient(135deg,var(--grad1),var(--grad2));
-  color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;
-}
+.login-btn{width:100%;max-width:320px;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--grad1),var(--grad2));color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px}
 .login-btn:active{opacity:0.85}
 .login-btn.secondary{background:var(--card);border:1px solid var(--border-mid);color:var(--text)}
 .login-divider{display:flex;align-items:center;gap:10px;width:100%;max-width:320px;margin:4px 0 12px}
@@ -58,207 +41,115 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 #pin-box{display:none;flex-direction:column;align-items:center;gap:8px;width:100%;max-width:320px}
 #login-msg{font-size:13px;color:var(--danger);text-align:center;min-height:18px;margin-top:4px;max-width:320px}
 
-/* ── APP ── */
+/* APP */
 #app{display:flex;flex-direction:column;height:100vh;height:100dvh}
 
-/* ── TOPBAR ── */
-#topbar{
-  display:flex;align-items:center;gap:10px;padding:12px 16px;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  flex-shrink:0;
-}
-#topbar h1{font-size:17px;font-weight:700;flex:1;
-  background:linear-gradient(135deg,var(--grad1),var(--grad2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.top-btn{
-  display:flex;align-items:center;justify-content:center;
-  min-width:36px;height:36px;padding:0 10px;
-  border-radius:10px;border:1px solid var(--border-mid);
-  background:var(--card);color:var(--text);cursor:pointer;font-size:14px;
-  white-space:nowrap;gap:4px;flex-shrink:0;
-}
+/* TOPBAR */
+#topbar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+#topbar h1{font-size:16px;font-weight:700;flex:1;background:linear-gradient(135deg,var(--grad1),var(--grad2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.top-btn{display:flex;align-items:center;justify-content:center;min-width:36px;height:34px;padding:0 10px;border-radius:8px;border:1px solid var(--border-mid);background:var(--card);color:var(--text);cursor:pointer;font-size:13px;white-space:nowrap;gap:4px;flex-shrink:0}
 .top-btn:active{background:var(--border-mid)}
 
-/* ── MAIN BODY ── */
-#main-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px}
+/* MAIN */
+#main-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px}
 
-/* ── FOLDER BAR ── */
-#folder-bar{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:14px;padding-bottom:4px}
+/* FOLDER BAR */
+#folder-bar{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
 #folder-bar::-webkit-scrollbar{display:none}
-.folder-tab{
-  padding:7px 16px;border-radius:20px;cursor:pointer;flex-shrink:0;
-  border:1px solid var(--border-mid);background:transparent;color:var(--subtext);
-  font-size:13px;font-weight:500;white-space:nowrap;
-}
+.folder-tab{padding:6px 14px;border-radius:20px;cursor:pointer;flex-shrink:0;border:1px solid var(--border-mid);background:transparent;color:var(--subtext);font-size:13px;font-weight:500;white-space:nowrap}
 .folder-tab.active{background:linear-gradient(135deg,var(--grad1),var(--grad2));border-color:transparent;color:#fff}
-.folder-tab:active{opacity:0.8}
-.btn-new-folder{
-  padding:7px 14px;border-radius:20px;cursor:pointer;flex-shrink:0;
-  border:1px dashed var(--border-mid);background:transparent;color:var(--subtext);
-  font-size:13px;
-}
+.btn-new-folder{padding:6px 12px;border-radius:20px;cursor:pointer;flex-shrink:0;border:1px dashed var(--border-mid);background:transparent;color:var(--subtext);font-size:13px}
 
-/* ── TOOLBAR ── */
-.toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
-.search-input{
-  flex:1;min-width:0;padding:10px 14px;border-radius:10px;
-  border:1px solid var(--border-mid);background:var(--card);color:var(--text);
-  font-size:14px;outline:none;
-}
+/* TOOLBAR */
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.search-input{flex:1;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid var(--border-mid);background:var(--card);color:var(--text);font-size:14px;outline:none}
 .search-input:focus{border-color:var(--grad1)}
-.btn-upload{
-  padding:10px 16px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,var(--grad1),var(--grad2));
-  color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;
-}
+.btn-upload{padding:9px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--grad1),var(--grad2));color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 
-/* ── GALLERY ── */
-#gallery{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:14px;
-}
-.video-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;
-}
+/* GALLERY */
+#gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;display:flex;flex-direction:column;gap:9px}
 .card-title{font-size:15px;font-weight:600;margin:0;line-height:1.4}
-.card-meta{color:var(--subtext);font-size:12px;display:flex;gap:8px;flex-wrap:wrap}
-.card-actions{display:flex;gap:7px;flex-wrap:wrap}
-.btn{
-  padding:8px 14px;border-radius:8px;border:1px solid var(--border-mid);
-  background:transparent;color:var(--text);font-size:13px;cursor:pointer;
-  font-weight:500;
-}
+.card-meta{color:var(--subtext);font-size:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card-actions{display:flex;gap:6px;flex-wrap:wrap}
+.badge-bunny{background:rgba(255,171,64,0.15);border:1px solid var(--amber);color:var(--amber);font-size:11px;padding:2px 8px;border-radius:20px}
+.badge-firebase{background:rgba(255,82,82,0.10);border:1px solid rgba(255,82,82,0.4);color:#ff8a80;font-size:11px;padding:2px 8px;border-radius:20px}
+.btn{padding:7px 12px;border-radius:8px;border:1px solid var(--border-mid);background:transparent;color:var(--text);font-size:13px;cursor:pointer;font-weight:500}
 .btn:active{background:var(--border-mid)}
 .btn.primary{background:linear-gradient(135deg,var(--grad1),var(--grad2));border:none;color:#fff}
 .btn.danger{border-color:var(--danger);color:var(--danger)}
+.btn.amber{border-color:var(--amber);color:var(--amber)}
 .btn.sm{padding:5px 10px;font-size:12px}
-.empty-state{
-  grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--subtext);font-size:14px;
-}
+.empty-state{grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--subtext);font-size:14px}
 
-/* ── UPLOAD PREVIEW ── */
-#upload-preview{
-  background:var(--card);border:1px solid var(--border-mid);
-  border-radius:14px;padding:16px;margin-bottom:16px;display:none;
-}
-#upload-preview h3{font-size:16px;margin-bottom:12px;color:var(--grad2)}
-.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* UPLOAD PREVIEW */
+#upload-preview{background:var(--card);border:1px solid var(--border-mid);border-radius:14px;padding:14px;margin-bottom:14px;display:none}
+#upload-preview h3{font-size:15px;margin-bottom:11px;color:var(--grad2)}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:480px){.preview-grid{grid-template-columns:1fr}}
-.preview-video{width:100%;border-radius:10px;background:#000;max-height:200px}
-.field-label{font-size:11px;color:var(--subtext);margin-bottom:5px;display:block}
-.field{
-  width:100%;padding:10px 12px;border-radius:8px;
-  border:1px solid var(--border-mid);background:var(--bg);
-  color:var(--text);font-size:14px;outline:none;
-}
+.preview-video{width:100%;border-radius:10px;background:#000;max-height:180px}
+.field-label{font-size:11px;color:var(--subtext);margin-bottom:4px;display:block}
+.field{width:100%;padding:9px 11px;border-radius:8px;border:1px solid var(--border-mid);background:var(--bg);color:var(--text);font-size:14px;outline:none}
 .field:focus{border-color:var(--grad1)}
-.convert-group{
-  display:flex;align-items:center;gap:8px;margin:10px 0;
-  padding:10px;border-radius:8px;
-  background:rgba(255,255,255,0.04);border:1px solid var(--border);
-  color:var(--text);font-size:13px;
-}
+.convert-group{display:flex;align-items:center;gap:8px;margin:9px 0;padding:9px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text);font-size:13px}
 .convert-group input{width:18px;height:18px;cursor:pointer;accent-color:var(--grad1)}
-.progress-wrap{
-  margin-top:10px;height:8px;border-radius:4px;
-  background:var(--border);overflow:hidden;display:none;
-}
+.progress-wrap{margin-top:9px;height:8px;border-radius:4px;background:var(--border);overflow:hidden;display:none}
 .progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--grad1),var(--grad2));transition:width 0.2s}
 .progress-label{font-size:11px;color:var(--subtext);margin-top:4px;display:block}
 .process-note{font-size:11px;color:var(--amber);margin-top:4px;display:none}
-.preview-actions{display:flex;gap:8px;margin-top:12px}
+.preview-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 
-/* ── FOLDER SECTION ── */
-#section-folders{display:none}
-.drawer-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:12px;padding:12px;margin-bottom:8px;
-  display:flex;gap:8px;align-items:center;
-}
-.drawer-input{
-  flex:1;border:none;background:transparent;color:var(--text);
-  border-bottom:1px solid var(--border-mid);outline:none;padding:4px;
-  font-size:14px;
-}
-
-/* ── PLAYER MODAL ── */
-#player-modal{
-  position:fixed;inset:0;background:rgba(0,0,0,0.75);
-  display:grid;place-items:center;z-index:100;display:none;
-}
-.player-content{
-  width:min(900px,94vw);background:var(--card);
-  border:1px solid var(--border-mid);border-radius:18px;
-  padding:16px;max-height:94vh;overflow-y:auto;
-}
+/* PLAYER MODAL */
+#player-modal{position:fixed;inset:0;background:rgba(0,0,0,0.80);display:none;place-items:center;z-index:100}
+.player-content{width:min(900px,96vw);background:var(--card);border:1px solid var(--border-mid);border-radius:18px;padding:14px;max-height:96vh;overflow-y:auto}
 .player-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.player-title{font-size:16px;font-weight:600;flex:1;margin-right:10px;line-height:1.3}
-#player{width:100%;border-radius:10px;background:#000;min-height:100px}
-.player-controls{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.player-title{font-size:15px;font-weight:600;flex:1;margin-right:10px;line-height:1.3}
+.player-controls{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
 
-/* ── MOVE MODAL ── */
-#move-modal{
-  position:fixed;inset:0;background:rgba(0,0,0,0.75);
-  display:grid;place-items:center;z-index:101;display:none;
-}
-.move-content{
-  width:min(360px,92vw);background:var(--card);
-  border:1px solid var(--border-mid);border-radius:18px;padding:16px;
-}
-.folder-choice{
-  padding:12px 14px;border:1px solid var(--border-mid);
-  border-radius:10px;margin-bottom:8px;cursor:pointer;font-size:14px;
-}
+/* Video.js custom */
+.video-js{width:100%;border-radius:10px;overflow:hidden;background:#000}
+.video-js .vjs-big-play-button{top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* MOVE MODAL */
+#move-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;place-items:center;z-index:101}
+.move-content{width:min(360px,92vw);background:var(--card);border:1px solid var(--border-mid);border-radius:18px;padding:14px}
+.folder-choice{padding:11px 13px;border:1px solid var(--border-mid);border-radius:10px;margin-bottom:7px;cursor:pointer;font-size:14px}
 .folder-choice:active{border-color:var(--grad1)}
 
-/* ── TOAST ── */
-#toast{
-  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--card);border:1px solid var(--border-mid);
-  border-radius:10px;padding:10px 18px;font-size:13px;
-  z-index:300;opacity:0;transition:all 0.25s;pointer-events:none;
-  white-space:nowrap;max-width:90vw;text-align:center;
-}
+/* BUNNY SETUP MODAL */
+#bunny-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:none;place-items:center;z-index:102}
+.bunny-content{width:min(400px,92vw);background:var(--card);border:1px solid var(--border-mid);border-radius:18px;padding:18px}
+
+/* FOLDER PANEL */
+#folder-panel{position:fixed;inset:0;background:var(--bg);z-index:50;display:none;flex-direction:column}
+#folder-panel.show{display:flex}
+.panel-topbar{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-topbar h2{font-size:15px;font-weight:600;flex:1}
+.panel-body{flex:1;overflow-y:auto;padding:14px}
+.drawer-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:7px;display:flex;gap:8px;align-items:center}
+.drawer-input{flex:1;border:none;background:transparent;color:var(--text);border-bottom:1px solid var(--border-mid);outline:none;padding:4px;font-size:14px}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border-mid);border-radius:10px;padding:10px 18px;font-size:13px;z-index:300;opacity:0;transition:all 0.25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.ok{border-color:var(--green);color:var(--green)}
 #toast.err{border-color:var(--danger);color:var(--danger)}
-
-/* ── SETUP PIN BUTTON ── */
-#btn-setup-pin{display:none}
-
-/* ── SECTION PANEL ── */
-.section-panel{
-  position:fixed;inset:0;background:var(--bg);z-index:50;
-  display:none;flex-direction:column;
-}
-.section-panel.show{display:flex}
-.panel-topbar{
-  display:flex;align-items:center;gap:10px;padding:12px 16px;
-  background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.panel-topbar h2{font-size:16px;font-weight:600;flex:1}
-.panel-body{flex:1;overflow-y:auto;padding:16px}
-.panel-footer{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+#toast.warn{border-color:var(--amber);color:var(--amber)}
 </style>
 </head>
 <body>
 
-<!-- ════════════════ LOGIN ════════════════ -->
+<!-- ════════ LOGIN ════════ -->
 <div id="section-login">
   <div class="login-logo">🎬</div>
   <div class="login-title">StudyWithLive</div>
   <div class="login-sub">Simpan & tonton video anda bila-bila masa</div>
-
   <button class="login-btn" onclick="doLoginGoogle()">Login dengan Google</button>
-
   <div class="login-divider">
     <div class="login-divider-line"></div>
     <div class="login-divider-text">atau</div>
     <div class="login-divider-line"></div>
   </div>
-
   <button class="login-btn secondary" onclick="togglePinBox()">🔐 Login sebagai Admin</button>
   <div id="pin-box">
     <input class="login-field pin-field" id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="PIN (4-6 digit)" autocomplete="new-password">
@@ -267,31 +158,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <div id="login-msg"></div>
 </div>
 
-<!-- ════════════════ APP ════════════════ -->
+<!-- ════════ APP ════════ -->
 <div id="app" style="display:none">
-
-  <!-- TOPBAR -->
   <div id="topbar">
     <h1>🎬 StudyWithLive</h1>
-    <button class="top-btn" id="btn-setup-pin" onclick="setupAdminPin()">🔐 PIN</button>
+    <button class="top-btn" id="btn-bunny-setup" style="display:none" onclick="openBunnySetup()">🐰 Bunny</button>
+    <button class="top-btn" id="btn-setup-pin" style="display:none" onclick="setupAdminPin()">🔐 PIN</button>
     <button class="top-btn" onclick="openFolderPanel()">🗂 Folder</button>
     <button class="top-btn" onclick="doLogout()">Keluar</button>
   </div>
 
-  <!-- MAIN -->
   <div id="main-body">
-
-    <!-- FOLDER BAR -->
     <div id="folder-bar"></div>
-
-    <!-- TOOLBAR -->
     <div class="toolbar">
       <input class="search-input" id="search" type="search" placeholder="Cari video...">
-      <button class="btn-upload" onclick="document.getElementById('file-input').click()">+ Tambah Video</button>
+      <button class="btn-upload" onclick="document.getElementById('file-input').click()">+ Video</button>
       <input id="file-input" type="file" accept="video/*,audio/*" style="display:none" onchange="handleFileSelect(event)">
     </div>
-
-    <!-- UPLOAD PREVIEW -->
     <div id="upload-preview">
       <h3>Preview Fail</h3>
       <div class="preview-grid">
@@ -299,72 +182,80 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
         <div>
           <label class="field-label">Tajuk</label>
           <input class="field" id="preview-title" placeholder="Masukkan tajuk...">
-
-          <label class="field-label" style="margin-top:10px">Simpan ke Folder</label>
+          <label class="field-label" style="margin-top:9px">Simpan ke Folder</label>
           <select class="field" id="preview-folder" style="cursor:pointer"></select>
-
           <div class="convert-group" id="convert-group">
             <input type="checkbox" id="check-convert">
             <label for="check-convert">Tukar ke MP3 (Audio sahaja)</label>
           </div>
-
           <div class="preview-actions">
-            <button class="btn primary" onclick="doUpload()">☁ Simpan ke Cloud</button>
+            <button class="btn primary" onclick="doUpload()">☁ Simpan</button>
             <button class="btn" onclick="cancelUpload()">Batal</button>
           </div>
-
-          <div class="progress-wrap" id="progress-wrap">
-            <div class="progress-bar" id="progress-bar"></div>
-          </div>
+          <div class="progress-wrap" id="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
           <span class="progress-label" id="progress-label"></span>
           <span class="process-note" id="process-note">*Jangan tutup tab semasa menukar audio.</span>
         </div>
       </div>
     </div>
-
-    <!-- GALLERY -->
     <div id="gallery"></div>
   </div>
 </div>
 
-<!-- ════════════════ PLAYER MODAL ════════════════ -->
-<div id="player-modal" onclick="closePlayer(event)">
+<!-- ════════ PLAYER MODAL ════════ -->
+<div id="player-modal" onclick="closePlayerModal(event)">
   <div class="player-content" onclick="event.stopPropagation()">
     <div class="player-header">
-      <div class="player-title" id="player-title"></div>
-      <button class="btn sm" onclick="closePlayer()">✕ Tutup</button>
+      <div class="player-title" id="player-title">-</div>
+      <button class="btn sm" onclick="closePlayerModal()">✕ Tutup</button>
     </div>
-    <video id="player" class="preview-video" controls preload="metadata" style="max-height:60vh"></video>
+    <video id="player" class="video-js vjs-default-skin" controls preload="metadata" style="width:100%;max-height:55vh;border-radius:10px"></video>
     <div class="player-controls">
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="font-size:12px;color:var(--subtext)">Laju</span>
-        <select id="playback-rate" class="field" style="width:auto;padding:6px 10px;font-size:13px" onchange="player.playbackRate=this.value">
-          <option value="0.75">0.75×</option>
-          <option value="1" selected>1×</option>
-          <option value="1.5">1.5×</option>
-          <option value="2">2×</option>
-        </select>
-      </div>
-      <button class="btn sm" onclick="player.currentTime-=10">« 10s</button>
-      <button class="btn sm" onclick="player.currentTime+=10">10s »</button>
+      <span style="font-size:12px;color:var(--subtext)">Laju</span>
+      <select id="playback-rate" class="field" style="width:auto;padding:5px 8px;font-size:13px" onchange="setRate(this.value)">
+        <option value="0.75">0.75×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
+      <button class="btn sm" onclick="seekBy(-10)">« 10s</button>
+      <button class="btn sm" onclick="seekBy(10)">10s »</button>
       <button class="btn sm" id="btn-pip" onclick="togglePip()">⧉ Mini</button>
     </div>
   </div>
 </div>
 
-<!-- ════════════════ MOVE MODAL ════════════════ -->
+<!-- ════════ MOVE MODAL ════════ -->
 <div id="move-modal" onclick="closeMoveModal(event)">
   <div class="move-content" onclick="event.stopPropagation()">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="font-size:16px;font-weight:600">Pindah ke Folder</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px">
+      <div style="font-size:15px;font-weight:600">Pindah ke Folder</div>
       <button class="btn sm" onclick="closeMoveModal()">✕</button>
     </div>
     <div id="move-list"></div>
   </div>
 </div>
 
-<!-- ════════════════ FOLDER PANEL ════════════════ -->
-<div id="folder-panel" class="section-panel">
+<!-- ════════ BUNNY SETUP MODAL ════════ -->
+<div id="bunny-modal" onclick="closeBunnyModal(event)">
+  <div class="bunny-content" onclick="event.stopPropagation()">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:16px;font-weight:700">🐰 Setup Bunny Stream</div>
+      <button class="btn sm" onclick="closeBunnyModal()">✕</button>
+    </div>
+    <label class="field-label">Library ID</label>
+    <input class="field" id="bunny-lib-id" placeholder="contoh: 744868" style="margin-bottom:10px">
+    <label class="field-label">API Key</label>
+    <input class="field" id="bunny-api-key" type="password" placeholder="API Key dari Bunny dashboard" style="margin-bottom:10px">
+    <label class="field-label">Pull Zone (contoh: vz-8107309f-38)</label>
+    <input class="field" id="bunny-pull-zone" placeholder="vz-xxxxxxxx-xx" style="margin-bottom:14px">
+    <button class="btn primary" style="width:100%" onclick="saveBunnyConfig()">Simpan Config</button>
+    <p style="font-size:11px;color:var(--subtext);margin-top:10px;text-align:center">Config disimpan dalam Firestore anda — selamat, tidak dalam kod.</p>
+  </div>
+</div>
+
+<!-- ════════ FOLDER PANEL ════════ -->
+<div id="folder-panel">
   <div class="panel-topbar">
     <button class="btn sm" onclick="closeFolderPanel()">← Balik</button>
     <h2>🗂 Urus Folder</h2>
@@ -373,17 +264,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
   <div class="panel-body" id="folder-list"></div>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
-<!-- ════════════════ FIREBASE ════════════════ -->
+<!-- ════════ FIREBASE + LOGIC ════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, signInWithPopup, signOut,
   onAuthStateChanged, EmailAuthProvider, linkWithCredential,
-  signInWithEmailAndPassword, updatePassword, setPersistence,
-  browserLocalPersistence
+  signInWithEmailAndPassword, updatePassword, setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, getDocs, addDoc,
@@ -403,14 +292,13 @@ const firebaseConfig = {
   appId: "1:850295583492:web:21f3b09fa1635309649651"
 };
 
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-const stor = getStorage(app);
-
+const fbApp = initializeApp(firebaseConfig);
+const auth  = getAuth(fbApp);
+const db    = getFirestore(fbApp);
+const stor  = getStorage(fbApp);
 setPersistence(auth, browserLocalPersistence).catch(()=>{});
 
-const ADMIN_EMAIL = 'adha86614@gmail.com'; // tukar ikut email admin anda
+const ADMIN_EMAIL = 'adha86614@gmail.com';
 
 // ── STATE ──
 let currentUser  = null;
@@ -421,25 +309,30 @@ let tempFile     = null;
 let tempExt      = 'mp4';
 let unsubVideos  = null;
 let moveTarget   = null;
-const playerCache = new Map();
+let bunnyConfig  = null; // { libraryId, apiKey, pullZone }
+let vjsPlayer    = null;
+let previewObjectUrl = null;
 
-// ── EXPOSE TO GLOBAL ──
-window.doLoginGoogle   = doLoginGoogle;
-window.doLoginPin      = doLoginPin;
-window.togglePinBox    = togglePinBox;
-window.setupAdminPin   = setupAdminPin;
-window.doLogout        = doLogout;
-window.handleFileSelect= handleFileSelect;
-window.cancelUpload    = cancelUpload;
-window.doUpload        = doUpload;
-window.closePlayer     = closePlayer;
-window.togglePip       = togglePip;
-window.closeMoveModal  = closeMoveModal;
-window.openFolderPanel = openFolderPanel;
-window.closeFolderPanel= closeFolderPanel;
-window.addFolder       = addFolder;
-
-const player = document.getElementById('player');
+// ── EXPOSE GLOBALS ──
+window.doLoginGoogle    = doLoginGoogle;
+window.doLoginPin       = doLoginPin;
+window.togglePinBox     = togglePinBox;
+window.setupAdminPin    = setupAdminPin;
+window.doLogout         = doLogout;
+window.handleFileSelect = handleFileSelect;
+window.cancelUpload     = cancelUpload;
+window.doUpload         = doUpload;
+window.closePlayerModal = closePlayerModal;
+window.togglePip        = togglePip;
+window.seekBy           = seekBy;
+window.setRate          = setRate;
+window.closeMoveModal   = closeMoveModal;
+window.openFolderPanel  = openFolderPanel;
+window.closeFolderPanel = closeFolderPanel;
+window.addFolder        = addFolder;
+window.openBunnySetup   = openBunnySetup;
+window.closeBunnyModal  = closeBunnyModal;
+window.saveBunnyConfig  = saveBunnyConfig;
 
 // ════════════════════════════════════
 // AUTH
@@ -452,70 +345,64 @@ function togglePinBox() {
 }
 
 async function doLoginGoogle() {
-  const msg = document.getElementById('login-msg');
-  msg.textContent = 'Membuka Google...';
+  setLoginMsg('Membuka Google...');
   try {
     await signInWithPopup(auth, new GoogleAuthProvider());
-    msg.textContent = '';
-  } catch(e) {
-    msg.textContent = e.message || 'Login gagal';
-  }
+    setLoginMsg('');
+  } catch(e) { setLoginMsg(e.message || 'Login gagal'); }
 }
 
 async function doLoginPin() {
   const pin = document.getElementById('pin-input').value.trim();
-  const msg = document.getElementById('login-msg');
-  if (!pin || !/^\d{4,6}$/.test(pin)) { msg.textContent = 'PIN mesti 4-6 digit angka'; return; }
-  msg.textContent = 'Mengesahkan...';
+  if (!pin || !/^\d{4,6}$/.test(pin)) { setLoginMsg('PIN mesti 4-6 digit angka'); return; }
+  setLoginMsg('Mengesahkan...');
   try {
     await signInWithEmailAndPassword(auth, ADMIN_EMAIL, pin);
     document.getElementById('pin-input').value = '';
     document.getElementById('pin-box').style.display = 'none';
-    msg.textContent = '';
+    setLoginMsg('');
   } catch(e) {
-    if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
-      msg.textContent = '❌ PIN salah. Cuba lagi.';
-    } else if (e.code === 'auth/user-not-found') {
-      msg.textContent = '❌ PIN belum ditetapkan. Login Google dulu.';
-    } else {
-      msg.textContent = '❌ ' + e.message;
-    }
+    if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') setLoginMsg('❌ PIN salah. Cuba lagi.');
+    else if (e.code === 'auth/user-not-found') setLoginMsg('❌ PIN belum ditetapkan. Login Google dulu.');
+    else setLoginMsg('❌ ' + e.message);
   }
 }
 
 async function setupAdminPin() {
-  if (!currentUser || currentUser.email !== ADMIN_EMAIL) { showToast('Hanya admin boleh setup PIN','err'); return; }
-  const pin = prompt('Tetapkan PIN Admin baru (4-6 digit angka):');
-  if (!pin || !/^\d{4,6}$/.test(pin)) { showToast('PIN mesti 4-6 digit angka','err'); return; }
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) { showToast('Hanya admin','err'); return; }
+  const pin = prompt('PIN Admin baru (4-6 digit):');
+  if (!pin || !/^\d{4,6}$/.test(pin)) { showToast('PIN tidak sah','err'); return; }
   try {
-    const credential = EmailAuthProvider.credential(ADMIN_EMAIL, pin);
-    try {
-      await linkWithCredential(currentUser, credential);
-    } catch(le) {
-      if (le.code === 'auth/provider-already-linked' || le.code === 'auth/email-already-in-use') {
-        await updatePassword(currentUser, pin);
-      } else throw le;
+    const cred = EmailAuthProvider.credential(ADMIN_EMAIL, pin);
+    try { await linkWithCredential(currentUser, cred); }
+    catch(le) {
+      if (le.code === 'auth/provider-already-linked' || le.code === 'auth/email-already-in-use') await updatePassword(currentUser, pin);
+      else throw le;
     }
     showToast('✅ PIN berjaya ditetapkan!','ok');
-  } catch(e) { showToast('❌ Gagal: ' + e.message,'err'); }
+  } catch(e) { showToast('❌ ' + e.message,'err'); }
 }
 
-async function doLogout() {
+function doLogout() {
   if (!confirm('Log keluar?')) return;
-  await signOut(auth);
+  signOut(auth);
 }
 
-onAuthStateChanged(auth, user => {
+function setLoginMsg(msg) { document.getElementById('login-msg').textContent = msg; }
+
+onAuthStateChanged(auth, async user => {
   currentUser = user;
   if (user) {
     document.getElementById('section-login').classList.add('hide');
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('app').style.flexDirection = 'column';
-    document.getElementById('btn-setup-pin').style.display =
-      user.email === ADMIN_EMAIL ? 'flex' : 'none';
-    loadFolders();
+    const appEl = document.getElementById('app');
+    appEl.style.display = 'flex';
+    appEl.style.flexDirection = 'column';
+    const isAdmin = user.email === ADMIN_EMAIL;
+    document.getElementById('btn-setup-pin').style.display = isAdmin ? 'flex' : 'none';
+    document.getElementById('btn-bunny-setup').style.display = isAdmin ? 'flex' : 'none';
+    await loadBunnyConfig();
+    await loadFolders();
     loadVideos();
-    showToast('Selamat datang, ' + (user.displayName || user.email.split('@')[0]),'ok');
   } else {
     document.getElementById('section-login').classList.remove('hide');
     document.getElementById('app').style.display = 'none';
@@ -524,11 +411,120 @@ onAuthStateChanged(auth, user => {
 });
 
 // ════════════════════════════════════
+// BUNNY CONFIG
+// ════════════════════════════════════
+async function loadBunnyConfig() {
+  if (!currentUser) return;
+  try {
+    const d = await getDoc(doc(db,'users',currentUser.uid,'settings','bunny'));
+    bunnyConfig = d.exists() ? d.data() : null;
+  } catch { bunnyConfig = null; }
+}
+
+function openBunnySetup() {
+  if (bunnyConfig) {
+    document.getElementById('bunny-lib-id').value = bunnyConfig.libraryId || '';
+    document.getElementById('bunny-api-key').value = bunnyConfig.apiKey || '';
+    document.getElementById('bunny-pull-zone').value = bunnyConfig.pullZone || '';
+  }
+  document.getElementById('bunny-modal').style.display = 'grid';
+}
+
+function closeBunnyModal(e) {
+  if (e && e.target !== document.getElementById('bunny-modal')) return;
+  document.getElementById('bunny-modal').style.display = 'none';
+}
+
+async function saveBunnyConfig() {
+  const libraryId = document.getElementById('bunny-lib-id').value.trim();
+  const apiKey    = document.getElementById('bunny-api-key').value.trim();
+  const pullZone  = document.getElementById('bunny-pull-zone').value.trim();
+  if (!libraryId || !apiKey || !pullZone) { showToast('Sila isi semua field','err'); return; }
+  try {
+    await setDoc(doc(db,'users',currentUser.uid,'settings','bunny'), { libraryId, apiKey, pullZone });
+    bunnyConfig = { libraryId, apiKey, pullZone };
+    document.getElementById('bunny-modal').style.display = 'none';
+    showToast('✅ Bunny config disimpan!','ok');
+  } catch(e) { showToast('❌ ' + e.message,'err'); }
+}
+
+// ════════════════════════════════════
+// BUNNY UPLOAD
+// ════════════════════════════════════
+async function uploadToBunny(file, onProgress) {
+  if (!bunnyConfig) throw new Error('Bunny belum disediakan. Tekan 🐰 Bunny dulu.');
+  const { libraryId, apiKey } = bunnyConfig;
+
+  // 1. Cipta video baru dalam Bunny
+  const createRes = await fetch(`https://video.bunnycdn.com/library/${libraryId}/videos`, {
+    method: 'POST',
+    headers: { 'AccessKey': apiKey, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: file.name })
+  });
+  if (!createRes.ok) throw new Error('Gagal cipta video dalam Bunny: ' + createRes.status);
+  const { guid } = await createRes.json();
+
+  // 2. Upload fail ke Bunny
+  const xhr = new XMLHttpRequest();
+  await new Promise((resolve, reject) => {
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+    };
+    xhr.onload = () => xhr.status < 300 ? resolve() : reject(new Error('Upload gagal: ' + xhr.status));
+    xhr.onerror = () => reject(new Error('Ralat rangkaian semasa upload'));
+    xhr.open('PUT', `https://video.bunnycdn.com/library/${libraryId}/videos/${guid}`);
+    xhr.setRequestHeader('AccessKey', apiKey);
+    xhr.send(file);
+  });
+
+  // 3. Bina URL HLS
+  const hlsUrl = `https://${bunnyConfig.pullZone}.b-cdn.net/${guid}/playlist.m3u8`;
+  const thumbnailUrl = `https://${bunnyConfig.pullZone}.b-cdn.net/${guid}/thumbnail.jpg`;
+
+  return { guid, hlsUrl, thumbnailUrl };
+}
+
+// ════════════════════════════════════
+// MIGRATE FIREBASE → BUNNY
+// ════════════════════════════════════
+async function migrateVideoToBunny(item) {
+  if (!bunnyConfig) { showToast('Setup Bunny dulu (🐰 Bunny)','warn'); openBunnySetup(); return; }
+  if (!confirm('Tukar "' + item.title + '" ke Bunny Stream?\nVideo asal dalam Firebase akan dikekalkan sehingga proses selesai.')) return;
+
+  showToast('⏳ Memuat turun dari Firebase...','warn');
+
+  try {
+    // Download dari Firebase
+    const response = await fetch(item.url);
+    if (!response.ok) throw new Error('Gagal muat turun dari Firebase');
+    const blob = await response.blob();
+    const file = new File([blob], item.title + '.' + item.ext, { type: blob.type });
+
+    showToast('⏳ Menghantar ke Bunny...','warn');
+
+    const { guid, hlsUrl, thumbnailUrl } = await uploadToBunny(file, pct => {
+      showToast('⏳ Hantar ke Bunny: ' + pct + '%','warn');
+    });
+
+    // Kemas kini Firestore — tukar ke Bunny
+    await updateDoc(doc(db,'users',currentUser.uid,'videos',item.id), {
+      bunnyGuid: guid,
+      hlsUrl,
+      thumbnailUrl,
+      source: 'bunny',
+      firebaseUrl: item.url // simpan url lama sebagai backup
+    });
+
+    showToast('✅ Berjaya dipindahkan ke Bunny!','ok');
+  } catch(e) {
+    showToast('❌ Gagal: ' + e.message,'err');
+  }
+}
+
+// ════════════════════════════════════
 // FOLDERS
 // ════════════════════════════════════
-function colFolders() {
-  return collection(db, 'users', currentUser.uid, 'swl_folders');
-}
+function colFolders() { return collection(db,'users',currentUser.uid,'swl_folders'); }
 
 async function loadFolders() {
   const snap = await getDocs(query(colFolders(), orderBy('createdAt')));
@@ -541,33 +537,22 @@ async function loadFolders() {
 function renderFolderBar() {
   const bar = document.getElementById('folder-bar');
   bar.innerHTML = '';
-
-  const allTab = document.createElement('button');
-  allTab.className = 'folder-tab' + (activeFolder === 'all' ? ' active' : '');
-  allTab.textContent = '📂 Semua';
-  allTab.onclick = () => { activeFolder = 'all'; renderFolderBar(); renderGallery(); };
-  bar.appendChild(allTab);
-
-  // Tab Video Lama (tiada folder)
-  const oldTab = document.createElement('button');
-  oldTab.className = 'folder-tab' + (activeFolder === '__old__' ? ' active' : '');
-  oldTab.textContent = '📼 Video Lama';
-  oldTab.onclick = () => { activeFolder = '__old__'; renderFolderBar(); renderGallery(); };
-  bar.appendChild(oldTab);
-
-  allFolders.forEach(f => {
-    const tab = document.createElement('button');
-    tab.className = 'folder-tab' + (activeFolder === f.id ? ' active' : '');
-    tab.textContent = '🗂 ' + f.name;
-    tab.onclick = () => { activeFolder = f.id; renderFolderBar(); renderGallery(); };
-    bar.appendChild(tab);
+  const tabs = [
+    { id:'all', label:'📂 Semua' },
+    { id:'__old__', label:'📼 Video Lama' },
+    ...allFolders.map(f => ({ id: f.id, label: '🗂 ' + f.name }))
+  ];
+  tabs.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'folder-tab' + (activeFolder === t.id ? ' active' : '');
+    btn.textContent = t.label;
+    btn.onclick = () => { activeFolder = t.id; renderFolderBar(); renderGallery(); };
+    bar.appendChild(btn);
   });
-
-  const addBtn = document.createElement('button');
-  addBtn.className = 'btn-new-folder';
-  addBtn.textContent = '+ Folder';
-  addBtn.onclick = addFolder;
-  bar.appendChild(addBtn);
+  const add = document.createElement('button');
+  add.className = 'btn-new-folder'; add.textContent = '+ Folder';
+  add.onclick = addFolder;
+  bar.appendChild(add);
 }
 
 function renderFolderSelect() {
@@ -599,199 +584,162 @@ function renderFolderPanel() {
   allFolders.forEach(f => {
     const div = document.createElement('div');
     div.className = 'drawer-card';
-    div.innerHTML = `
-      <input class="drawer-input" value="${escHtml(f.name)}" placeholder="Nama folder...">
-      <button class="btn sm danger">✕</button>
-    `;
+    div.innerHTML = `<input class="drawer-input" value="${escHtml(f.name)}"><button class="btn sm danger">✕</button>`;
     div.querySelector('input').addEventListener('change', e =>
       updateDoc(doc(db,'users',currentUser.uid,'swl_folders',f.id), { name: e.target.value }));
     div.querySelector('button').addEventListener('click', async () => {
-      if (!confirm('Padam folder "' + f.name + '"? Video dalam folder tidak dipadam.')) return;
+      if (!confirm('Padam folder "' + f.name + '"?')) return;
       await deleteDoc(doc(db,'users',currentUser.uid,'swl_folders',f.id));
-      await loadFolders();
-      showToast('🗑 Folder dipadam');
+      await loadFolders(); showToast('🗑 Folder dipadam');
     });
     list.appendChild(div);
   });
 }
 
-function openFolderPanel() {
-  document.getElementById('folder-panel').classList.add('show');
-}
-function closeFolderPanel() {
-  document.getElementById('folder-panel').classList.remove('show');
-  loadFolders();
-}
+function openFolderPanel() { document.getElementById('folder-panel').classList.add('show'); }
+function closeFolderPanel() { document.getElementById('folder-panel').classList.remove('show'); loadFolders(); }
 
 // ════════════════════════════════════
 // VIDEOS
 // ════════════════════════════════════
-function colVideos() {
-  return collection(db, 'users', currentUser.uid, 'videos');
-}
-
 function loadVideos() {
   if (unsubVideos) { unsubVideos(); unsubVideos = null; }
   unsubVideos = onSnapshot(
-    query(colVideos(), orderBy('createdAt','desc')),
-    snap => {
-      allVideos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderGallery();
-    }
+    query(collection(db,'users',currentUser.uid,'videos'), orderBy('createdAt','desc')),
+    snap => { allVideos = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderGallery(); }
   );
 }
 
 function teardown() {
   if (unsubVideos) { unsubVideos(); unsubVideos = null; }
-  allVideos = []; allFolders = [];
+  allVideos = []; allFolders = []; bunnyConfig = null;
+  destroyPlayer();
 }
 
 function renderGallery() {
   const q = (document.getElementById('search').value || '').toLowerCase().trim();
   let list = allVideos;
-
-  if (activeFolder === '__old__') {
-    list = list.filter(v => !v.folderId);
-  } else if (activeFolder !== 'all') {
-    list = list.filter(v => v.folderId === activeFolder);
-  }
-
+  if (activeFolder === '__old__') list = list.filter(v => !v.folderId);
+  else if (activeFolder !== 'all') list = list.filter(v => v.folderId === activeFolder);
   if (q) list = list.filter(v => (v.title||'').toLowerCase().includes(q));
 
   const gallery = document.getElementById('gallery');
   gallery.innerHTML = '';
-
-  if (!list.length) {
-    gallery.innerHTML = '<div class="empty-state">Tiada video ditemui.</div>';
-    return;
-  }
+  if (!list.length) { gallery.innerHTML = '<div class="empty-state">Tiada video ditemui.</div>'; return; }
 
   list.forEach(item => {
     const folderName = allFolders.find(f => f.id === item.folderId)?.name || '';
+    const isBunny = item.source === 'bunny';
     const card = document.createElement('div');
     card.className = 'video-card';
     card.innerHTML = `
       <div class="card-title">${escHtml(item.title || 'Video')}</div>
       <div class="card-meta">
         <span>${(item.ext||'').toUpperCase()}</span>
-        <span>${item.sizeBytes ? (item.sizeBytes/1024/1024).toFixed(1)+' MB' : ''}</span>
-        ${folderName ? '<span>🗂 '+escHtml(folderName)+'</span>' : '<span style="color:var(--amber)">📼 Tiada Folder</span>'}
+        ${item.sizeBytes ? '<span>'+( item.sizeBytes/1024/1024).toFixed(1)+' MB</span>' : ''}
+        ${isBunny ? '<span class="badge-bunny">🐰 Bunny HLS</span>' : '<span class="badge-firebase">🔥 Firebase</span>'}
+        ${folderName ? '<span>🗂 '+escHtml(folderName)+'</span>' : ''}
       </div>
       <div class="card-actions">
         <button class="btn primary sm" data-id="${item.id}" data-action="play">▶ Main</button>
-        <button class="btn sm" data-id="${item.id}" data-action="rename">✎ Edit</button>
-        <button class="btn sm" data-id="${item.id}" data-action="move">📁 Pindah</button>
+        <button class="btn sm" data-id="${item.id}" data-action="rename">✎</button>
+        <button class="btn sm" data-id="${item.id}" data-action="move">📁</button>
+        ${!isBunny ? '<button class="btn sm amber" data-id="'+item.id+'" data-action="migrate">🐰 Tukar ke Bunny</button>' : ''}
         <button class="btn sm danger" data-id="${item.id}" data-action="delete">🗑</button>
-      </div>
-    `;
+      </div>`;
     gallery.appendChild(card);
   });
-
-  gallery.addEventListener('click', handleCardClick);
 }
 
-async function handleCardClick(e) {
-  const btn = e.target.closest('button');
+document.getElementById('gallery').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-action]');
   if (!btn) return;
-  const id = btn.dataset.id;
-  const action = btn.dataset.action;
-  if (!id || !action) return;
-  const item = allVideos.find(v => v.id === id);
+  const item = allVideos.find(v => v.id === btn.dataset.id);
   if (!item) return;
-
-  if (action === 'play') openPlayer(item);
-
+  const action = btn.dataset.action;
+  if (action === 'play')    openPlayer(item);
   if (action === 'rename') {
     const name = prompt('Nama baharu:', item.title);
     if (name?.trim() && name.trim() !== item.title) {
-      await updateDoc(doc(db,'users',currentUser.uid,'videos',id), { title: name.trim() });
+      await updateDoc(doc(db,'users',currentUser.uid,'videos',item.id), { title: name.trim() });
       showToast('✅ Nama dikemas kini','ok');
     }
   }
-
-  if (action === 'move') openMoveModal(item);
-
+  if (action === 'move')    openMoveModal(item);
+  if (action === 'migrate') migrateVideoToBunny(item);
   if (action === 'delete') {
     if (!confirm('Padam "' + item.title + '"?')) return;
-    try {
-      await deleteObject(ref(stor, 'users/'+currentUser.uid+'/videos/'+id+'.'+item.ext));
-    } catch(e) {}
-    await deleteDoc(doc(db,'users',currentUser.uid,'videos',id));
-    showToast('🗑 Video dipadam');
+    try { await deleteObject(ref(stor,'users/'+currentUser.uid+'/videos/'+item.id+'.'+item.ext)); } catch{}
+    await deleteDoc(doc(db,'users',currentUser.uid,'videos',item.id));
+    showToast('🗑 Dipadam');
   }
-}
+});
 
 document.getElementById('search').addEventListener('input', renderGallery);
 
 // ════════════════════════════════════
 // PLAYER
 // ════════════════════════════════════
-async function openPlayer(item) {
-  document.getElementById('player-title').textContent = item.title + ' ⏳';
-  player.preload = 'metadata';
-  player.src = '';
-  player.load();
-
-  let src = playerCache.get(item.id);
-  if (!src) { src = item.url + '#t=0.001'; playerCache.set(item.id, src); }
-  player.src = src;
-
-  player.oncanplay = () => {
-    document.getElementById('player-title').textContent = item.title;
-    player.play().catch(()=>{});
-    player.oncanplay = null;
-    setMediaSession(item);
-  };
-  player.onerror = () => {
-    document.getElementById('player-title').textContent = item.title + ' ❌';
-  };
-
-  document.getElementById('player-modal').style.display = 'grid';
+function initVjs() {
+  if (vjsPlayer) return vjsPlayer;
+  vjsPlayer = videojs('player', {
+    controls: true, preload: 'metadata', fluid: true,
+    html5: { vhs: { overrideNative: true }, nativeAudioTracks: false, nativeVideoTracks: false }
+  });
+  return vjsPlayer;
 }
 
-function closePlayer(e) {
+function destroyPlayer() {
+  if (vjsPlayer) { vjsPlayer.dispose(); vjsPlayer = null; }
+}
+
+async function openPlayer(item) {
+  document.getElementById('player-title').textContent = item.title;
+  document.getElementById('player-modal').style.display = 'grid';
+
+  const vjs = initVjs();
+  vjs.pause();
+
+  if (item.source === 'bunny' && item.hlsUrl) {
+    // Bunny HLS — smooth streaming
+    vjs.src({ src: item.hlsUrl, type: 'application/x-mpegURL' });
+  } else {
+    // Firebase raw — guna #t=0.001 trick
+    vjs.src({ src: item.url + '#t=0.001', type: 'video/' + (item.ext || 'mp4') });
+  }
+
+  vjs.ready(() => { vjs.play().catch(()=>{}); });
+  setMediaSession(item);
+}
+
+function closePlayerModal(e) {
   if (e && e.target !== document.getElementById('player-modal')) return;
-  player.pause();
-  player.oncanplay = null;
-  player.src = '';
-  player.load();
+  if (vjsPlayer) { vjsPlayer.pause(); vjsPlayer.src(''); }
   document.getElementById('player-modal').style.display = 'none';
   if (document.pictureInPictureElement) document.exitPictureInPicture().catch(()=>{});
   if (navigator.mediaSession) navigator.mediaSession.metadata = null;
 }
 
+function seekBy(sec) { if (vjsPlayer) vjsPlayer.currentTime(vjsPlayer.currentTime() + sec); }
+function setRate(val) { if (vjsPlayer) vjsPlayer.playbackRate(parseFloat(val)); }
+
 async function togglePip() {
+  const vid = vjsPlayer?.el()?.querySelector('video');
+  if (!vid) return;
   try {
-    if (document.pictureInPictureElement) {
-      await document.exitPictureInPicture();
-      document.getElementById('btn-pip').textContent = '⧉ Mini';
-    } else {
-      await player.requestPictureInPicture();
-      document.getElementById('btn-pip').textContent = '✕ Keluar Mini';
-    }
+    if (document.pictureInPictureElement) { await document.exitPictureInPicture(); document.getElementById('btn-pip').textContent = '⧉ Mini'; }
+    else { await vid.requestPictureInPicture(); document.getElementById('btn-pip').textContent = '✕ Keluar Mini'; }
   } catch { showToast('Browser tidak sokong Mini Player','err'); }
 }
 
-player.onleavepictureinpicture = () => {
-  document.getElementById('btn-pip').textContent = '⧉ Mini';
-};
-
 function setMediaSession(item) {
   if (!('mediaSession' in navigator)) return;
-  navigator.mediaSession.metadata = new MediaMetadata({
-    title: item.title,
-    artist: 'StudyWithLive',
-    album: (item.ext||'').toUpperCase()
-  });
-  navigator.mediaSession.setActionHandler('play', () => player.play());
-  navigator.mediaSession.setActionHandler('pause', () => player.pause());
-  navigator.mediaSession.setActionHandler('seekbackward', () => player.currentTime -= 10);
-  navigator.mediaSession.setActionHandler('seekforward', () => player.currentTime += 10);
-  navigator.mediaSession.setActionHandler('stop', () => {
-    player.pause();
-    document.getElementById('player-modal').style.display = 'none';
-    navigator.mediaSession.metadata = null;
-  });
+  navigator.mediaSession.metadata = new MediaMetadata({ title: item.title, artist: 'StudyWithLive', album: item.source === 'bunny' ? 'Bunny HLS' : 'Firebase' });
+  const vid = () => vjsPlayer?.el()?.querySelector('video');
+  navigator.mediaSession.setActionHandler('play', () => vjsPlayer?.play());
+  navigator.mediaSession.setActionHandler('pause', () => vjsPlayer?.pause());
+  navigator.mediaSession.setActionHandler('seekbackward', () => seekBy(-10));
+  navigator.mediaSession.setActionHandler('seekforward', () => seekBy(10));
 }
 
 // ════════════════════════════════════
@@ -801,26 +749,16 @@ function openMoveModal(item) {
   moveTarget = item;
   const list = document.getElementById('move-list');
   list.innerHTML = '';
-
   const none = document.createElement('div');
-  none.className = 'folder-choice';
-  none.textContent = '📂 Tiada Folder (Video Lama)';
+  none.className = 'folder-choice'; none.textContent = '📂 Tiada Folder';
   none.onclick = () => moveVideo(null);
   list.appendChild(none);
-
-  allFolders.forEach(f => {
-    if (f.id === item.folderId) return;
+  allFolders.filter(f => f.id !== item.folderId).forEach(f => {
     const div = document.createElement('div');
-    div.className = 'folder-choice';
-    div.textContent = '🗂 ' + f.name;
+    div.className = 'folder-choice'; div.textContent = '🗂 ' + f.name;
     div.onclick = () => moveVideo(f.id);
     list.appendChild(div);
   });
-
-  if (!allFolders.length) {
-    list.innerHTML += '<div style="color:var(--subtext);font-size:13px;padding:8px">Tiada folder lain. Buat folder dulu.</div>';
-  }
-
   document.getElementById('move-modal').style.display = 'grid';
 }
 
@@ -828,8 +766,7 @@ async function moveVideo(folderId) {
   document.getElementById('move-modal').style.display = 'none';
   if (!moveTarget) return;
   await updateDoc(doc(db,'users',currentUser.uid,'videos',moveTarget.id), { folderId: folderId || null });
-  showToast('✅ Video dipindah','ok');
-  moveTarget = null;
+  showToast('✅ Video dipindah','ok'); moveTarget = null;
 }
 
 function closeMoveModal(e) {
@@ -845,18 +782,21 @@ function handleFileSelect(e) {
   if (!file) return;
   tempFile = file;
   tempExt = (file.name.split('.').pop() || 'mp4').toLowerCase();
-
+  if (previewObjectUrl) { URL.revokeObjectURL(previewObjectUrl); previewObjectUrl = null; }
+  previewObjectUrl = URL.createObjectURL(file);
   document.getElementById('convert-group').style.display = file.type.includes('audio') ? 'none' : 'flex';
-  document.getElementById('preview-video').src = URL.createObjectURL(file);
-  document.getElementById('preview-title').value = file.name.replace(/\.[^/.]+$/, '');
+  document.getElementById('preview-video').src = previewObjectUrl;
+  document.getElementById('preview-title').value = file.name.replace(/\.[^/.]+$/,'');
   document.getElementById('upload-preview').style.display = 'block';
   renderFolderSelect();
   e.target.value = '';
 }
 
 function cancelUpload() {
+  if (previewObjectUrl) { URL.revokeObjectURL(previewObjectUrl); previewObjectUrl = null; }
+  const pv = document.getElementById('preview-video');
+  pv.pause(); pv.removeAttribute('src'); pv.load();
   document.getElementById('upload-preview').style.display = 'none';
-  document.getElementById('preview-video').src = '';
   document.getElementById('progress-wrap').style.display = 'none';
   document.getElementById('progress-bar').style.width = '0%';
   document.getElementById('progress-label').textContent = '';
@@ -867,52 +807,65 @@ function cancelUpload() {
 
 async function doUpload() {
   if (!currentUser || !tempFile) return;
-  const id = crypto.randomUUID();
-  const uid = currentUser.uid;
-  let fileToUpload = tempFile;
-  let finalExt = tempExt;
-  let title = (document.getElementById('preview-title').value || 'Video').trim();
+  const title = (document.getElementById('preview-title').value || 'Video').trim();
   const folderId = document.getElementById('preview-folder').value || null;
-
+  const doConvert = document.getElementById('check-convert').checked && tempFile.type.includes('video');
   const btnSave = document.querySelector('#upload-preview .btn.primary');
   btnSave.disabled = true;
-  document.getElementById('progress-wrap').style.display = 'block';
-  document.getElementById('progress-label').textContent = 'Sedia...';
+  showProgress();
 
   try {
-    if (document.getElementById('check-convert').checked && tempFile.type.includes('video')) {
+    let fileToUpload = tempFile;
+    let finalExt = tempExt;
+    let finalTitle = title;
+
+    if (doConvert) {
       document.getElementById('process-note').style.display = 'block';
-      document.getElementById('progress-label').textContent = 'Merakam audio...';
+      setProgressLabel('Merakam audio...');
       fileToUpload = await extractAudio(tempFile, document.getElementById('preview-video'));
       document.getElementById('process-note').style.display = 'none';
-      finalExt = 'mp3';
-      title += ' (Audio)';
+      finalExt = 'mp3'; finalTitle = title + ' (Audio)';
     }
 
-    const storageRef = ref(stor, 'users/'+uid+'/videos/'+id+'.'+finalExt);
-    const task = uploadBytesResumable(storageRef, fileToUpload);
-
-    task.on('state_changed',
-      snap => {
-        const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-        document.getElementById('progress-bar').style.width = pct + '%';
-        document.getElementById('progress-label').textContent = 'Upload: ' + pct + '%';
-      },
-      err => { throw err; },
-      async () => {
-        const url = await getDownloadURL(storageRef);
-        await setDoc(doc(db,'users',uid,'videos',id), {
-          id, title, url, ext: finalExt,
-          sizeBytes: fileToUpload.size,
-          createdAt: Date.now(),
-          folderId: folderId
-        });
-        showToast('✅ Video berjaya disimpan!','ok');
-        cancelUpload();
-      }
-    );
-  } catch(err) {
-    showToast('❌ Gagal: ' + err.message,'err');
+    if (bunnyConfig) {
+      // Upload ke Bunny
+      setProgressLabel('Menghantar ke Bunny Stream...');
+      const { guid, hlsUrl, thumbnailUrl } = await uploadToBunny(fileToUpload, pct => {
+        setProgress(pct); setProgressLabel('Bunny: ' + pct + '%');
+      });
+      const id = crypto.randomUUID();
+      await setDoc(doc(db,'users',currentUser.uid,'videos',id), {
+        id, title: finalTitle, ext: finalExt, sizeBytes: fileToUpload.size,
+        createdAt: Date.now(), folderId,
+        source: 'bunny', bunnyGuid: guid, hlsUrl, thumbnailUrl,
+        url: hlsUrl
+      });
+    } else {
+      // Fallback ke Firebase Storage
+      setProgressLabel('Menghantar ke Firebase...');
+      const id = crypto.randomUUID();
+      const storageRef = ref(stor,'users/'+currentUser.uid+'/videos/'+id+'.'+finalExt);
+      const task = uploadBytesResumable(storageRef, fileToUpload);
+      await new Promise((resolve, reject) => {
+        task.on('state_changed',
+          snap => { const p = Math.round(snap.bytesTransferred/snap.totalBytes*100); setProgress(p); setProgressLabel('Firebase: '+p+'%'); },
+          reject,
+          async () => {
+            const url = await getDownloadURL(storageRef);
+            await setDoc(doc(db,'users',currentUser.uid,'videos',id), {
+              id, title: finalTitle, url, ext: finalExt,
+              sizeBytes: fileToUpload.size, createdAt: Date.now(), folderId,
+              source: 'firebase'
+            });
+            resolve();
+          }
+        );
+      });
+    }
+    showToast('✅ Video berjaya disimpan!','ok');
+    cancelUpload();
+  } catch(e) {
+    showToast('❌ ' + e.message,'err');
     btnSave.disabled = false;
     document.getElementById('process-note').style.display = 'none';
   }
@@ -931,36 +884,35 @@ function extractAudio(file, videoEl) {
         const rec = new MediaRecorder(new MediaStream(tracks));
         const chunks = [];
         rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-        rec.onstop = () => resolve(new File([new Blob(chunks, {type:'audio/mp3'})], 'audio.mp3', {type:'audio/mp3'}));
+        rec.onstop = () => resolve(new File([new Blob(chunks,{type:'audio/mp3'})],'audio.mp3',{type:'audio/mp3'}));
         rec.start();
         const iv = setInterval(() => {
-          const pct = Math.round((videoEl.currentTime / videoEl.duration) * 100);
-          document.getElementById('progress-bar').style.width = pct + '%';
-          document.getElementById('progress-label').textContent = 'Merakam: ' + pct + '%';
+          const p = Math.round(videoEl.currentTime/videoEl.duration*100);
+          setProgress(p); setProgressLabel('Merakam: '+p+'%');
         }, 1000);
         videoEl.onended = () => { clearInterval(iv); rec.stop(); };
-      } catch(err) { reject(err); }
+      } catch(e) { reject(e); }
     };
     videoEl.onerror = () => reject(new Error('Gagal muatkan video.'));
   });
 }
 
+function showProgress() { document.getElementById('progress-wrap').style.display = 'block'; }
+function setProgress(pct) { document.getElementById('progress-bar').style.width = pct+'%'; }
+function setProgressLabel(t) { document.getElementById('progress-label').textContent = t; }
+
 // ════════════════════════════════════
 // UTILS
 // ════════════════════════════════════
-let _toastTimer = null;
+let _tt = null;
 function showToast(msg, type='') {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show' + (type ? ' '+type : '');
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.className = '', 3000);
+  el.textContent = msg; el.className = 'show' + (type ? ' '+type : '');
+  clearTimeout(_tt); _tt = setTimeout(() => el.className = '', 3500);
 }
-
 function escHtml(s) {
   return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
-
 </script>
 </body>
 </html>
