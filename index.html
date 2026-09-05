@@ -728,10 +728,16 @@ document.getElementById('search').addEventListener('input', renderGallery);
 // ════════════════════════════════════
 async function openPlayer(item) {
   document.getElementById('player-title').textContent = item.title + ' ⏳';
-  player.preload = 'metadata';
-  player.src = '';
+
+  // Kosongkan dulu sepenuhnya sebelum load baru
+  player.pause();
+  player.removeAttribute('src');
   player.load();
 
+  // Preload metadata sahaja — jangan buffer lebih
+  player.preload = 'metadata';
+
+  // Cache URL
   let src = playerCache.get(item.id);
   if (!src) { src = item.url + '#t=0.001'; playerCache.set(item.id, src); }
   player.src = src;
@@ -746,6 +752,16 @@ async function openPlayer(item) {
     document.getElementById('player-title').textContent = item.title + ' ❌';
   };
 
+  // Hadkan buffer — browser hanya simpan 30 saat ke depan
+  player.onprogress = () => {
+    if (!player.buffered.length) return;
+    const bufferedEnd = player.buffered.end(player.buffered.length - 1);
+    const ahead = bufferedEnd - player.currentTime;
+    if (ahead > 30) {
+      player.onprogress = null; // berhenti pantau bila dah cukup
+    }
+  };
+
   document.getElementById('player-modal').style.display = 'grid';
 }
 
@@ -753,8 +769,11 @@ function closePlayer(e) {
   if (e && e.target !== document.getElementById('player-modal')) return;
   player.pause();
   player.oncanplay = null;
-  player.src = '';
+  player.onprogress = null;
+  player.onerror = null;
+  player.removeAttribute('src'); // buang src sepenuhnya, bebaskan memori
   player.load();
+  playerCache.clear(); // kosongkan cache bila tutup
   document.getElementById('player-modal').style.display = 'none';
   if (document.pictureInPictureElement) document.exitPictureInPicture().catch(()=>{});
   if (navigator.mediaSession) navigator.mediaSession.metadata = null;
@@ -840,14 +859,20 @@ function closeMoveModal(e) {
 // ════════════════════════════════════
 // UPLOAD
 // ════════════════════════════════════
+let previewObjectUrl = null;
+
 function handleFileSelect(e) {
   const file = e.target.files?.[0];
   if (!file) return;
   tempFile = file;
   tempExt = (file.name.split('.').pop() || 'mp4').toLowerCase();
 
+  // Bebaskan URL lama sebelum buat baru
+  if (previewObjectUrl) { URL.revokeObjectURL(previewObjectUrl); previewObjectUrl = null; }
+
+  previewObjectUrl = URL.createObjectURL(file);
   document.getElementById('convert-group').style.display = file.type.includes('audio') ? 'none' : 'flex';
-  document.getElementById('preview-video').src = URL.createObjectURL(file);
+  document.getElementById('preview-video').src = previewObjectUrl;
   document.getElementById('preview-title').value = file.name.replace(/\.[^/.]+$/, '');
   document.getElementById('upload-preview').style.display = 'block';
   renderFolderSelect();
@@ -855,8 +880,13 @@ function handleFileSelect(e) {
 }
 
 function cancelUpload() {
+  // Bebaskan object URL dari memori
+  if (previewObjectUrl) { URL.revokeObjectURL(previewObjectUrl); previewObjectUrl = null; }
+  const pv = document.getElementById('preview-video');
+  pv.pause();
+  pv.removeAttribute('src');
+  pv.load();
   document.getElementById('upload-preview').style.display = 'none';
-  document.getElementById('preview-video').src = '';
   document.getElementById('progress-wrap').style.display = 'none';
   document.getElementById('progress-bar').style.width = '0%';
   document.getElementById('progress-label').textContent = '';
