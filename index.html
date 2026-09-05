@@ -107,7 +107,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 .player-controls{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
 
 /* Video.js custom */
-.video-js{width:100%;border-radius:10px;overflow:hidden;background:#000}
+.video-js{width:100%;border-radius:10px;overflow:hidden;background:#000;max-height:80vh}
+.video-js .vjs-tech{object-fit:contain;max-height:80vh}
 .video-js .vjs-big-play-button{top:50%;left:50%;transform:translate(-50%,-50%)}
 
 /* MOVE MODAL */
@@ -209,7 +210,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
       <div class="player-title" id="player-title">-</div>
       <button class="btn sm" onclick="closePlayerModal()">✕ Tutup</button>
     </div>
-    <video id="player" class="video-js vjs-default-skin" controls preload="metadata" style="width:100%;max-height:55vh;border-radius:10px"></video>
+    <video id="player" class="video-js vjs-default-skin" controls preload="metadata" style="width:100%;max-height:80vh;border-radius:10px"></video>
     <div class="player-controls">
       <span style="font-size:12px;color:var(--subtext)">Laju</span>
       <select id="playback-rate" class="field" style="width:auto;padding:5px 8px;font-size:13px" onchange="setRate(this.value)">
@@ -695,7 +696,18 @@ function initVjs() {
   if (vjsPlayer) return vjsPlayer;
   vjsPlayer = videojs('player', {
     controls: true, preload: 'metadata', fluid: true,
+    aspectRatio: undefined,
     html5: { vhs: { overrideNative: true }, nativeAudioTracks: false, nativeVideoTracks: false }
+  });
+  // Biar video tentukan sendiri aspect ratio ikut kandungan
+  vjsPlayer.on('loadedmetadata', function() {
+    const vid = vjsPlayer.el().querySelector('video');
+    if (!vid) return;
+    const w = vid.videoWidth;
+    const h = vid.videoHeight;
+    if (w && h) {
+      vjsPlayer.aspectRatio(h + ':' + w); // portrait = tinggi:lebar
+    }
   });
   return vjsPlayer;
 }
